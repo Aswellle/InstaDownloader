@@ -9,6 +9,9 @@ dist-e/
 __pycache__/
 *.pyc
 
+# 内置 Python 运行时（scripts/prepare-python-runtime.mjs 下载产物，不入库）
+python-runtime/
+
 # TS 增量构建信息
 *.tsbuildinfo
 

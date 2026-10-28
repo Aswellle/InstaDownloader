@@ -7,7 +7,7 @@
 
 **把 Instagram 媒体完整地归档在你自己的硬盘上。**
 
-[![Release](https://img.shields.io/badge/Release-v0.4.0-rose?logo=github)](../../releases)
+[![Release](https://img.shields.io/badge/Release-v0.5.0-rose?logo=github)](../../releases)
 [![Downloads](https://img.shields.io/github/downloads/Aswellle/InstaDown/total?label=Downloads&color=0d9488&logo=github)](../../releases)
 [![Tests](https://img.shields.io/badge/Tests-130%20passing-16a34a?logo=vitest)](#开发)
 [![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-blue?logo=electron)](#下载)
@@ -189,8 +189,8 @@ afterPack 钩子会把 `python-runtime/` 里的内置运行时复制进安装包
 ```bash
 # 1. 更新 package.json 的 version 并提交
 # 2. 打标签推送 → GitHub Actions 自动三平台构建并创建 Release
-git tag v0.4.0
-git push origin v0.4.0
+git tag v0.5.0
+git push origin v0.5.0
 ```
 
 本机验证：`npm run dist:dir`（目录级）或 `npm run dist`（安装器）。

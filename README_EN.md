@@ -8,7 +8,7 @@
 
 **Archive Instagram media to your own disk — completely.**
 
-[![Release](https://img.shields.io/badge/Release-v0.4.0-rose?logo=github)](../../releases)
+[![Release](https://img.shields.io/badge/Release-v0.5.0-rose?logo=github)](../../releases)
 [![Downloads](https://img.shields.io/github/downloads/Aswellle/InstaDown/total?label=Downloads&color=0d9488&logo=github)](../../releases)
 [![Tests](https://img.shields.io/badge/Tests-130%20passing-16a34a?logo=vitest)](#development)
 [![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-blue?logo=electron)](#download)
@@ -188,8 +188,8 @@ Test coverage: queue state machine, resumable downloads, URL classification, car
 ```bash
 # 1. Bump version in package.json and commit
 # 2. Push a tag → GitHub Actions builds all three platforms and creates the Release
-git tag v0.4.0
-git push origin v0.4.0
+git tag v0.5.0
+git push origin v0.5.0
 ```
 
 Local verification: `npm run dist:dir` (directory) or `npm run dist` (installers).

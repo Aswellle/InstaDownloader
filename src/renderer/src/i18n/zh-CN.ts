@@ -422,6 +422,12 @@ export const zhCN = {
     queueFailed: '加入队列失败',
     workerDown: '解析服务异常，正在重启…',
     workerReviveBanner: '解析服务不可用，帖子/主页解析暂受影响；下载中的任务不受影响，可点击重试恢复',
+    pythonMissingBanner:
+      '未找到可用的 Python 运行环境，链接解析暂不可用（下载功能不受影响）。正常安装的发行版已内置 Python 运行时；若看到此提示，请参考 README「运行要求」重新安装，或安装 Python 3.11+ 后重试。',
+    pythonVersionBanner:
+      '检测到系统 Python 版本过低（需要 3.11+），链接解析暂不可用（下载功能不受影响）。请升级 Python 后点击重试；或重新安装带内置运行时的发行版。',
+    pythonRetry: '重试检测',
+    pythonReadyToast: '解析服务已恢复（Python {version}）',
   },
 
   // ── 拖拽 ──

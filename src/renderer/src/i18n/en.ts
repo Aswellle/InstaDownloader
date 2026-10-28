@@ -405,6 +405,12 @@ export const en = {
     queueFailed: 'Failed to enqueue',
     workerDown: 'Parser error, restarting…',
     workerReviveBanner: 'Parser service unavailable — post/profile parsing is offline. Active downloads are unaffected; retry to bring it back',
+    pythonMissingBanner:
+      'No usable Python runtime found — link parsing is offline (downloads are unaffected). Official installers ship a bundled Python runtime; if you see this, reinstall per the README "Runtime requirements", or install Python 3.11+ and retry.',
+    pythonVersionBanner:
+      'System Python is too old (3.11+ required) — link parsing is offline (downloads are unaffected). Upgrade Python and retry, or reinstall a build with the bundled runtime.',
+    pythonRetry: 'Retry',
+    pythonReadyToast: 'Parser restored (Python {version})',
   },
 
   drag: {

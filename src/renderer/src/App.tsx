@@ -82,6 +82,8 @@ export default function App() {
   const lastAutoClipboard = useRef('')
   const [dragActive, setDragActive] = useState(false)
   const dragCounter = useRef(0)
+  /** Python 运行环境缺失/过旧：workerDown 横幅升级为带指引的版本 */
+  const [pythonReason, setPythonReason] = useState<'missing' | 'version' | null>(null)
 
   // 拖拽 URL 到窗口：自动解析
   useEffect(() => {
@@ -150,7 +152,16 @@ export default function App() {
     const offWorker = window.instadown.onWorkerStatus((status) => {
       setWorkerReady(status === 'ready')
       setWorkerDown(status === 'down')
-      if (status === 'down') toast.error(i18nT('download.workerDown'))
+      if (status === 'ready') setPythonReason(null)
+      if (status === 'down') {
+        toast.error(i18nT('download.workerDown'))
+        // 启动失败时问一次运行环境：把"解析失败"升级成可行动的指引
+        // （缺 Python / 版本过旧），而不是让用户面对一句含糊的错误
+        void window.instadown
+          .getPythonStatus()
+          .then((py) => setPythonReason(py.available ? null : py.reason))
+          .catch(() => setPythonReason(null))
+      }
     })
     return () => {
       offTask()
@@ -478,17 +489,42 @@ export default function App() {
       </div>
 
       {/* 解析服务降级横幅：重启预算耗尽后的持久可见状态 + 手动复活入口。
+          Python 环境缺失/过旧时升级为具体指引（而不是含糊的"解析失败"）。
           下载走独立的网络传输，不受影响 —— 必须说清楚，避免用户误以为全停。 */}
       {workerDown && (
         <div className="flex shrink-0 items-center gap-2 border-b border-amber-500/40 bg-amber-500/10 px-4 py-1.5 text-xs text-amber-600 dark:text-amber-400">
           <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
-          <span className="min-w-0 flex-1">{t('download.workerReviveBanner')}</span>
+          <span className="min-w-0 flex-1">
+            {pythonReason === 'missing'
+              ? t('download.pythonMissingBanner')
+              : pythonReason === 'version'
+                ? t('download.pythonVersionBanner')
+                : t('download.workerReviveBanner')}
+          </span>
           <Button
             variant="ghost"
             size="sm"
             className="h-6 shrink-0 px-2 text-xs"
             onClick={() => {
-              void window.instadown.reviveWorker().catch(() => {})
+              void window.instadown
+                .reviveWorker()
+                .then((ok) => {
+                  if (ok) {
+                    setPythonReason(null)
+                    void window.instadown
+                      .getPythonStatus()
+                      .then((py) => {
+                        if (py.available && py.version) toast.success(t('download.pythonReadyToast', { version: py.version }))
+                      })
+                      .catch(() => {})
+                  } else {
+                    return window.instadown
+                      .getPythonStatus()
+                      .then((py) => setPythonReason(py.available ? null : py.reason))
+                      .catch(() => {})
+                  }
+                })
+                .catch(() => {})
             }}
           >
             <RotateCcw className="h-3.5 w-3.5" /> {t('common.retry')}

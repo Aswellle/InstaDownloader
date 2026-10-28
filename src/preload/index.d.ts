@@ -6,6 +6,7 @@ import type {
   MediaRow,
   ProfileMediaPage,
   ProfileUser,
+  PythonStatus,
   TaskSnapshot
 } from '@shared/types'
 
@@ -95,6 +96,8 @@ declare global {
       onWorkerStatus(cb: (status: 'ready' | 'down') => void): () => void
       /** 解析服务崩溃重启耗尽后手动复活（返回复活后是否就绪） */
       reviveWorker(): Promise<boolean>
+      /** Python 运行环境状态（解析失败指引 / 设置 → 关于） */
+      getPythonStatus(): Promise<PythonStatus>
     }
   }
 }

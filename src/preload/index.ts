@@ -71,7 +71,9 @@ const api = {
     return () => ipcRenderer.removeListener('worker:status', listener)
   },
   /** 解析服务崩溃重启耗尽后手动复活（返回复活后是否就绪） */
-  reviveWorker: () => ipcRenderer.invoke('worker:revive')
+  reviveWorker: () => ipcRenderer.invoke('worker:revive'),
+  /** Python 运行环境状态（解析失败指引 / 设置 → 关于） */
+  getPythonStatus: () => ipcRenderer.invoke('worker:python')
 }
 
 contextBridge.exposeInMainWorld('instadown', api)

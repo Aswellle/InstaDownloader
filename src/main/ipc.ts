@@ -365,6 +365,10 @@ export function registerIpc(deps: IpcDeps): void {
     return worker.ready
   })
 
+  // Python 运行环境状态（设置 → 关于 与解析失败指引使用：
+  // 区分"没装 Python"与"版本过旧"，避免一律显示解析失败）
+  handle('worker:python', () => worker.pythonStatus())
+
   // ------------------------------------------------- 原生窗口 / 主题同步
   // Windows 的窗口控制按钮（最小化/最大化/关闭）区由原生绘制，需按当前主题
   // 更新 titleBarOverlay 颜色与窗口底色。

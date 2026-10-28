@@ -102,9 +102,36 @@ InstaDownloader answers with three design commitments:
 | Platform | How |
 |------|----------|
 | **Windows** | Grab `InstaDownloader-Setup-x.x.x.exe` (NSIS installer) from [Releases](../../releases) |
-| **macOS / Linux** | DMG / AppImage built automatically by CI on `v*` tags (see [Release process](#release-process)) |
+| **macOS / Linux** | Grab the `.dmg` / `.AppImage` from [Releases](../../releases), built automatically by CI |
 
-Requirements: Windows 10+ / macOS 12+ / mainstream Linux distributions.
+### Runtime requirements (end users)
+
+**No Python, no dev tools.** Release installers bundle a standalone Python
+runtime (CPython 3.12, shipped with the app, never installed into your system) —
+download, install, and it just works:
+
+- OS: Windows 10+ (x64) / macOS 12+ (Apple Silicon or Intel) / mainstream
+  Linux (x64)
+- Disk: ~130–180 MB per install (runtime included), plus space for your media
+  archive
+- Network: Instagram public endpoints only; no third-party servers
+
+If parsing reports Python unavailable (a banner explains what to do), the
+installer was likely incomplete, or the bundled runtime is missing while your
+system Python is older than 3.11 — re-download a full release; alternatively
+install [Python 3.11+](https://www.python.org/downloads/) and hit Retry in the
+app.
+
+### Build requirements (developers)
+
+Only needed when building from source:
+
+- **Node ≥ 22** (CI uses Node 22)
+- **Python ≥ 3.11** (the worker has zero pip dependencies; set `INSTADOWN_PYTHON`
+  to pin an interpreter)
+- Run `npm run prepare:python` before packaging a release (npmmirror mirror by
+  default, GitHub Releases as fallback; `PB_RUNTIME_URLS` overrides mirrors;
+  `INSTADOWN_NO_BUNDLED_PYTHON=1` skips it for local debugging only)
 
 ## Quick start
 
@@ -149,7 +176,10 @@ npm run dist:dir     # Package (directory, for verification)
 npm run dist         # Package release (win nsis / mac dmg / linux AppImage)
 ```
 
-Requirements: **Node ≥ 22, Python ≥ 3.11** (the worker has zero pip dependencies). Set `INSTADOWN_PYTHON` to pin an interpreter.
+See [Build requirements (developers)](#build-requirements-developers) above.
+When packaging with `npm run dist`, the afterPack hook copies the bundled
+runtime from `python-runtime/` into the installer; a missing runtime fails the
+build instead of producing an installer whose parser can't run.
 
 Test coverage: queue state machine, resumable downloads, URL classification, carousel fallback, session tiering, selector stability — **130 cases** (83 Vitest + 47 unittest).
 

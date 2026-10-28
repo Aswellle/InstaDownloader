@@ -105,9 +105,33 @@ InstaDownloader 的答案是三个设计承诺：
 | 平台 | 获取方式 |
 |------|----------|
 | **Windows** | [Releases](../../releases) 下载 `InstaDownloader-Setup-x.x.x.exe`（NSIS 安装器） |
-| **macOS / Linux** | 推送 `v*` 标签后由 CI 自动构建 DMG / AppImage（见 [发布流程](#发布流程)） |
+| **macOS / Linux** | [Releases](../../releases) 下载 `.dmg` / `.AppImage`，由 CI 自动构建 |
 
-系统要求：Windows 10+ / macOS 12+ / 主流 Linux 发行版。
+### 运行要求（普通用户）
+
+**无需安装 Python，也无需任何开发环境。** 发行版安装包内置独立的 Python
+运行时（CPython 3.12，随包分发、不写入系统），下载安装后开箱即用：
+
+- 系统要求：Windows 10+ (x64) / macOS 12+ (Apple Silicon 或 Intel) / 主流
+  Linux 发行版 (x64)
+- 磁盘空间：安装包约 130–180 MB（含内置运行时），另需媒体归档空间
+- 网络：仅访问 Instagram 公开端点；不连接任何第三方服务器
+
+若解析功能提示 Python 不可用（横幅会给出指引），通常是安装包不完整或
+系统 Python 版本低于 3.11 且内置运行时缺失 —— 重新下载完整发行版即可；
+也可自行安装 [Python 3.11+](https://www.python.org/downloads/) 后在应用内
+点击「重试」。
+
+### 构建要求（开发者）
+
+从源码构建才需要以下环境：
+
+- **Node ≥ 22**（CI 使用 Node 22）
+- **Python ≥ 3.11**（worker 零 pip 依赖；环境变量 `INSTADOWN_PYTHON` 可
+  指定解释器）
+- 打包发行版前先执行 `npm run prepare:python` 下载内置运行时（默认走
+  npmmirror 镜像，回退 GitHub Releases；可用 `PB_RUNTIME_URLS` 指定镜像；
+  `INSTADOWN_NO_BUNDLED_PYTHON=1` 仅限本地调试跳过）
 
 ## 快速开始
 
@@ -154,7 +178,9 @@ npm run dist:dir     # 打包（目录级，验证用）
 npm run dist         # 打包发布版（win nsis / mac dmg / linux AppImage）
 ```
 
-要求：**Node ≥ 22、Python ≥ 3.11**（worker 零 pip 依赖）。环境变量 `INSTADOWN_PYTHON` 可指定解释器。
+要求见上方[构建要求（开发者）](#构建要求开发者)。`npm run dist` 打包时
+afterPack 钩子会把 `python-runtime/` 里的内置运行时复制进安装包；缺运行时
+会直接构建失败，不会产出解析不可用的残缺包。
 
 测试覆盖：队列状态机、断点续传、URL 分类、多图回退、会话分级、selector 稳定性等 **130 个用例**（Vitest 83 + unittest 47）。
 

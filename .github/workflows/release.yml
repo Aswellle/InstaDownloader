@@ -43,6 +43,12 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
+      # 内置 Python 运行时：发行包自带独立 CPython（默认 npmmirror 镜像，
+      # 回退 GitHub Releases；下载后按 SHA256SUMS 校验）。缺它则下面的
+      # electron-builder afterPack 钩子直接失败，不会静默产出残缺安装包。
+      - name: Prepare bundled Python runtime
+        run: node scripts/prepare-python-runtime.mjs
+
       # 打包但不上传：发布交给下面的 action。
       # electron-builder 自带的 GitHub publisher 在 CI 上不产出任何资产
       # （工作流显示成功、Release 页却什么都没有），已弃用。

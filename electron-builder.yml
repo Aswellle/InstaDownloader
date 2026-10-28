@@ -6,6 +6,8 @@ directories:
 files:
   - out/**
 asar: true
+# 内置 Python 运行时由 afterPack 钩子按目标平台/架构复制进 resources/python/
+afterPack: scripts/electron-after-pack.cjs
 extraResources:
   - from: worker
     to: worker

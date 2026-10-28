@@ -105,6 +105,18 @@ export interface AppError {
   message: string
 }
 
+/** Python 运行环境状态（worker:python 通道；解析服务不可用时的指引依据） */
+export interface PythonStatus {
+  available: boolean
+  /** bundled = 安装包内置运行时；env = INSTADOWN_PYTHON；system = 系统 Python */
+  source: 'bundled' | 'env' | 'system' | null
+  /** major.minor，探测失败为 null */
+  version: string | null
+  command: string | null
+  /** unavailable 时的原因：missing = 没有可用解释器；version = 版本过旧 */
+  reason: 'missing' | 'version' | null
+}
+
 
 export type ThemeMode = 'light' | 'dark' | 'system'
 

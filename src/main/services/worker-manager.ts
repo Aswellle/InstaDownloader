@@ -3,7 +3,12 @@ import { EventEmitter } from 'node:events'
 import { existsSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import type { AppError } from '@shared/types'
+import type { AppError, PythonStatus } from '@shared/types'
+import {
+  findPython,
+  inspectPython,
+  type PythonCommand
+} from './python-runtime'
 
 /**
  * Python Worker 管理器（docs/dev/02 §3）：
@@ -30,50 +35,7 @@ export function resolveWorkerDir(): string {
   return workerDir
 }
 
-async function tryPython(cmd: string, args: string[]): Promise<string | null> {
-  return new Promise((resolve) => {
-    let child: ChildProcessWithoutNullStreams
-    try {
-      child = spawn(cmd, args, { windowsHide: true }) as ChildProcessWithoutNullStreams
-    } catch {
-      return resolve(null)
-    }
-    let ok = false
-    const timer = setTimeout(() => {
-      child.kill()
-      resolve(ok ? `${cmd} ${args.join(' ')}`.trim() : null)
-    }, 5000)
-    child.on('error', () => {
-      clearTimeout(timer)
-      resolve(null)
-    })
-    // 同上：探测进程瞬间退出时写入端可能 EPIPE
-    child.stdin.on('error', () => {})
-    child.stdout.on('data', (d) => {
-      if (String(d).includes('ok')) ok = true
-    })
-    child.on('close', () => {
-      clearTimeout(timer)
-      resolve(ok ? `${cmd} ${args.join(' ')}`.trim() : null)
-    })
-    child.stdin.end('print("ok")\n')
-  })
-}
-
-export async function findPython(): Promise<string> {
-  const envPy = process.env.INSTADOWN_PYTHON
-  if (envPy && existsSync(envPy)) return envPy
-  const candidates: Array<[string, string[]]> = [
-    ['python', []],
-    ['python3', []],
-    ['py', ['-3']]
-  ]
-  for (const [cmd, args] of candidates) {
-    const found = await tryPython(cmd, args)
-    if (found) return found
-  }
-  throw Object.assign(new Error('python not found'), { code: 'E_WORKER_DOWN' })
-}
+export { findPython }
 
 interface Pending {
   resolve: (v: unknown) => void
@@ -88,7 +50,7 @@ const EXPECTED_PROTOCOL = 2
 
 export class WorkerManager extends EventEmitter {
   private proc: ChildProcessWithoutNullStreams | null = null
-  private command: string | null = null
+  private python: PythonCommand | null = null
   private pending = new Map<number, Pending>()
   private nextId = 1
   private started = false
@@ -117,11 +79,24 @@ export class WorkerManager extends EventEmitter {
     return this.start()
   }
 
+  /** 运行环境状态（worker:python 通道）：已解析直接返回，未启动则探测。 */
+  async pythonStatus(): Promise<PythonStatus> {
+    if (this.python) {
+      return {
+        available: true,
+        source: this.python.source,
+        version: this.python.version,
+        command: this.python.cmd,
+        reason: null
+      }
+    }
+    return inspectPython()
+  }
+
   private async doStart(): Promise<void> {
-    if (!this.command) this.command = await findPython()
-    const [cmd, ...baseArgs] = this.command.split(' ')
+    if (!this.python) this.python = await findPython()
     const script = join(this.dir, 'main.py')
-    const proc = spawn(cmd, [...baseArgs, script], {
+    const proc = spawn(this.python.cmd, [...this.python.args, script], {
       stdio: ['pipe', 'pipe', 'pipe'],
       windowsHide: true
     }) as ChildProcessWithoutNullStreams

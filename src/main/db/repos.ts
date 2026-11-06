@@ -75,6 +75,11 @@ export class Repos {
    * 用户在主页里滑一遍就会产生大量未下载的行。媒体库的语义是
    * "我的本地归档"，因此以 history 为准 —— 同一 media_id 可能被
    * 下载多次（重下/改名），取最新一条路径。
+   *
+   * 再按 (author, url) 去重：同一远端媒体只显示一次。历史上兜底
+   * 解析路径曾为同一条媒体生成过多个不同 id 的行（启动迁移会清理，
+   * 这里兜底保证任何来源的重复都不会在库里重复展示），同一行内取
+   * id 最短者 —— 它是归档时间最早、被历史引用最多的规范行。
    */
   listArchivedMedia(author?: string, limit = 500): MediaRow[] {
     const where = author ? 'WHERE m.author = ?' : ''
@@ -90,6 +95,14 @@ export class Repos {
               GROUP BY media_id
            ) h ON h.media_id = m.id
           ${where}
+            AND m.id = (
+              SELECT MIN(m2.id) FROM media m2
+               WHERE m2.url = m.url AND m2.author IS m.author
+                 AND m2.id IN (
+                   SELECT media_id FROM history
+                    WHERE media_id IS NOT NULL AND path <> ''
+                 )
+            )
           ORDER BY h.last_at DESC
           LIMIT ?`
       )

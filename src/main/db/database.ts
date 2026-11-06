@@ -63,5 +63,25 @@ export function openDatabase(dbPath: string): DB {
   db.exec('PRAGMA journal_mode = WAL;')
   db.exec('PRAGMA synchronous = NORMAL;')
   db.exec(SCHEMA)
+  runMigrations(db)
   return db
+}
+
+/**
+ * 数据修正（幂等，启动时执行）：
+ * 早期版本的 oembed 兜底路径为同一次解析的重复触发生成累积后缀的 id
+ * （oembed-<shortcode>-re、-re-re、-re-re-re…），同一帖子在 media 表里
+ * 留下多行、媒体库里表现为重复缩略图。按 (author, url) 保留 id 最短
+ * （后缀最少，即最接近规范形态）的一行，其余清理；history 以路径为准，
+ * 不受影响。
+ */
+export function runMigrations(db: DB): void {
+  db.prepare(
+    `DELETE FROM media
+      WHERE id LIKE 'oembed-%-re%'
+        AND length(id) > (
+          SELECT MIN(length(m2.id)) FROM media m2
+           WHERE m2.url = media.url AND m2.author IS media.author
+        )`
+  ).run()
 }

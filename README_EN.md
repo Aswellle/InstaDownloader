@@ -52,7 +52,7 @@ InstaDownloader answers with three design commitments:
 
 <div align="center">
   <img src="assets/screenshots/profile-search.jpg" width="820" alt="Profile archive via username" />
-  <p><sub>Type a username to jump straight to its archive — profile overview, media grid and controlled paging (natgeo: 32K posts · 268M followers)</sub></p>
+  <p><sub>Type a username to jump straight to its archive — profile overview, media grid and controlled paging</sub></p>
 </div>
 
 **In-app loop** (no system browser)

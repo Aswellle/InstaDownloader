@@ -55,7 +55,7 @@ InstaDownloader 的答案是三个设计承诺：
 
 <div align="center">
   <img src="assets/screenshots/profile-search.jpg" width="820" alt="用户名直达主页归档" />
-  <p><sub>输入用户名直达主页归档 —— 资料概览、作品网格与可控分页（natgeo：3.2 万帖子 · 2.68 亿粉丝）</sub></p>
+  <p><sub>输入用户名直达主页归档 —— 资料概览、作品网格与可控分页</sub></p>
 </div>
 
 **应用内闭环**（不跳系统浏览器）

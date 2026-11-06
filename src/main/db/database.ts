@@ -72,10 +72,41 @@ export function openDatabase(dbPath: string): DB {
  * 早期版本的 oembed 兜底路径为同一次解析的重复触发生成累积后缀的 id
  * （oembed-<shortcode>-re、-re-re、-re-re-re…），同一帖子在 media 表里
  * 留下多行、媒体库里表现为重复缩略图。按 (author, url) 保留 id 最短
- * （后缀最少，即最接近规范形态）的一行，其余清理；history 以路径为准，
- * 不受影响。
+ * （后缀最少，即最接近规范形态）的一行，其余清理。
+ *
+ * 删除前必须把指向被删行的 history 记录重定向到保留行——history 是
+ * 媒体库展示的依据（JOIN history），悬空引用会让该媒体从库里整体
+ * 消失。历史行自身有路径与文件，重定向后下载历史不受影响。
  */
 export function runMigrations(db: DB): void {
+  // 悬空/待删行的 id 比保留行长（累积后缀），保留行是它的前缀 ——
+  // 用 instr(悬空id, 保留id) = 1 找前缀匹配，MIN 取最短规范行。
+  // 1) 已悬空的 history（此前版本清理过 media 但没重定向）
+  db.prepare(
+    `UPDATE history
+        SET media_id = (
+          SELECT MIN(m2.id) FROM media m2
+           WHERE m2.id LIKE 'oembed-%' AND instr(history.media_id, m2.id) = 1
+        )
+      WHERE media_id LIKE 'oembed-%-re%'
+        AND media_id NOT IN (SELECT id FROM media)`
+  ).run()
+  // 2) 即将删除的重复行的 history → 重定向到保留行
+  db.prepare(
+    `UPDATE history
+        SET media_id = (
+          SELECT MIN(m2.id) FROM media m2
+           WHERE m2.id LIKE 'oembed-%' AND instr(history.media_id, m2.id) = 1
+        )
+      WHERE media_id IN (
+        SELECT id FROM media WHERE id LIKE 'oembed-%-re%'
+          AND length(id) > (
+            SELECT MIN(length(m2.id)) FROM media m2
+             WHERE m2.url = media.url AND m2.author IS media.author
+          )
+      )`
+  ).run()
+  // 3) 删除重复 media 行
   db.prepare(
     `DELETE FROM media
       WHERE id LIKE 'oembed-%-re%'

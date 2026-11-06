@@ -154,6 +154,34 @@ describe('媒体库按内容去重', () => {
     expect(repos.listArchivedMedia().map((r) => r.id).sort()).toEqual(['oembed-ABC-re', 'other'])
   })
 
+  it('迁移把指向被删行的 history 重定向到保留行（媒体库不丢条目）', () => {
+    const repos = freshRepos()
+    // 只有将被删除的两行有归档记录：删掉它们后 history 全部悬空
+    for (const id of ['oembed-ABC-re', 'oembed-ABC-re-re', 'oembed-ABC-re-re-re']) {
+      repos.upsertMedia(media({ id, url, thumb_url: url }))
+    }
+    for (const id of ['oembed-ABC-re-re', 'oembed-ABC-re-re-re']) {
+      repos.insertHistory({
+        task_id: `t-${id}`,
+        media_id: id,
+        author: 'example_author',
+        path: `D:/dl/example_author/${id}.jpg`,
+        size: 10,
+        created_at: 1_700_000_000_000
+      })
+    }
+    // 模拟"上一版迁移删了 media 但没重定向"造成的悬空 history
+    const db = (repos as unknown as { db: import('../../src/main/db/database').DB }).db
+    db.prepare("DELETE FROM media WHERE id IN ('oembed-ABC-re-re', 'oembed-ABC-re-re-re')").run()
+    expect(repos.listArchivedMedia()).toEqual([])
+    runMigrations(db)
+    const rows = repos.listArchivedMedia()
+    expect(rows).toHaveLength(1)
+    expect(rows[0].id).toBe('oembed-ABC-re')
+    const redirected = db.prepare("SELECT media_id FROM history WHERE media_id LIKE 'oembed-ABC%'").all() as Array<{ media_id: string }>
+    expect(redirected.every((r) => r.media_id === 'oembed-ABC-re')).toBe(true)
+  })
+
   it('作者相同的两条不同媒体互不合并', () => {
     const repos = freshRepos()
     for (const [id, u] of [

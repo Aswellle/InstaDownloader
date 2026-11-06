@@ -106,7 +106,7 @@ export function TopBar({
 
   return (
     <div className="flex h-full items-center gap-3">
-      <div className="flex items-center gap-2 pl-1">
+      <div className="flex shrink-0 items-center gap-2 pl-1">
         <Aperture className="h-5 w-5 text-rose-500" />
         <span className="text-sm font-semibold tracking-wide text-app">InstaDownloader</span>
         {/* 开源入口：章鱼猫图标 + Star 请求（悬停提示）。
@@ -128,7 +128,7 @@ export function TopBar({
         </a>
       </div>
 
-      <div className="no-drag mx-auto flex w-full max-w-2xl items-center gap-2">
+      <div className="no-drag mx-auto flex min-w-0 w-full max-w-2xl items-center gap-2">
         <div className="relative flex-1">
           <input
             ref={inputRef}
@@ -158,14 +158,16 @@ export function TopBar({
 
       {/* 右侧：语言切换 + IG 账号入口。
           语言切换放在最右（窗口控制按钮左侧第一个可见控件），
-          下拉里标注"跟随系统"状态；设置入口在左上角图标组。 */}
-      <div className="no-drag flex items-center gap-2 pr-1">
+          下拉里标注"跟随系统"状态；设置入口在左上角图标组。
+          shrink-0 + 不换行：窗口较窄时由中间输入框让位 —— 此前右侧
+          群组被弹性压缩，登录按钮文字被挤成两行。 */}
+      <div className="no-drag flex shrink-0 items-center gap-2 pr-1">
         {/* 语言切换：地球图标 + 当前语言短名，下拉选择。
             需求要求入口在主窗口右侧且显眼 —— 图标 + 文字比纯图标可发现性高。 */}
         <div className="relative" ref={langRef}>
           <button
             onClick={() => setLangOpen((v) => !v)}
-            className="flex items-center gap-1.5 rounded-full border border-app px-2.5 py-1 text-xs text-muted transition-colors hover:bg-surface-hover hover:text-app"
+            className="flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border border-app px-2.5 py-1 text-xs text-muted transition-colors hover:bg-surface-hover hover:text-app"
             title={t('topBar.language')}
             aria-haspopup="menu"
             aria-expanded={langOpen}
@@ -232,7 +234,7 @@ export function TopBar({
         ) : (
           <button
             onClick={onLoginClick}
-            className="flex items-center gap-1.5 rounded-full border border-app px-2.5 py-1 text-xs text-muted transition-colors hover:bg-surface-hover hover:text-app"
+            className="flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border border-app px-2.5 py-1 text-xs text-muted transition-colors hover:bg-surface-hover hover:text-app"
             title={t('topBar.loginTooltip')}
           >
             <LogIn className="h-3.5 w-3.5" />

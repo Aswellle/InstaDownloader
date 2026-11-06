@@ -53,6 +53,11 @@ InstaDownloader 的答案是三个设计承诺：
 - 多图帖子完整解析（老帖 contextJSON 缺失时自动走多层回退）
 - Apple Photos 式多选网格：单击选、Shift 连选、Ctrl 点选、全选
 
+<div align="center">
+  <img src="assets/screenshots/profile-search.jpg" width="820" alt="用户名直达主页归档" />
+  <p><sub>输入用户名直达主页归档 —— 资料概览、作品网格与可控分页（natgeo：3.2 万帖子 · 2.68 亿粉丝）</sub></p>
+</div>
+
 **应用内闭环**（不跳系统浏览器）
 
 <div align="center">
@@ -90,6 +95,22 @@ InstaDownloader 的答案是三个设计承诺：
     <tr>
       <td align="center"><sub>浅色主题</sub></td>
       <td align="center"><sub>深色主题</sub></td>
+    </tr>
+    <tr>
+      <td><img src="assets/screenshots/library-filter.jpg" alt="筛选抽屉：作者与排序" /></td>
+      <td><img src="assets/screenshots/library-select.jpg" alt="库内多选批量下载" /></td>
+    </tr>
+    <tr>
+      <td align="center"><sub>筛选抽屉：按作者过滤 + 四种排序一键切换</sub></td>
+      <td align="center"><sub>库内多选：Ctrl/Shift 点选，批量下载所选</sub></td>
+    </tr>
+    <tr>
+      <td><img src="assets/screenshots/media-panel.jpg" alt="媒体库侧栏" /></td>
+      <td><img src="assets/screenshots/history-panel.jpg" alt="下载历史" /></td>
+    </tr>
+    <tr>
+      <td align="center"><sub>媒体库侧栏：按作者检索，展开全屏网格</sub></td>
+      <td align="center"><sub>下载历史：缩略图 + 体积一目了然，本地文件应用内回看</sub></td>
     </tr>
   </table>
 </div>

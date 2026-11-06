@@ -50,6 +50,11 @@ InstaDownloader answers with three design commitments:
 - Full carousel parsing (multi-layer fallback for old posts whose `contextJSON` is missing)
 - Apple Photos-style multi-select grid: click to select, Shift to range-select, Ctrl to toggle, select all
 
+<div align="center">
+  <img src="assets/screenshots/profile-search.jpg" width="820" alt="Profile archive via username" />
+  <p><sub>Type a username to jump straight to its archive — profile overview, media grid and controlled paging (natgeo: 32K posts · 268M followers)</sub></p>
+</div>
+
 **In-app loop** (no system browser)
 
 <div align="center">
@@ -87,6 +92,22 @@ InstaDownloader answers with three design commitments:
     <tr>
       <td align="center"><sub>Light theme</sub></td>
       <td align="center"><sub>Dark theme</sub></td>
+    </tr>
+    <tr>
+      <td><img src="assets/screenshots/library-filter.jpg" alt="Filter drawer: authors and sorting" /></td>
+      <td><img src="assets/screenshots/library-select.jpg" alt="In-library batch selection" /></td>
+    </tr>
+    <tr>
+      <td align="center"><sub>Filter drawer: author filter + one-click switching between four sort modes</sub></td>
+      <td align="center"><sub>In-library multi-select: Ctrl/Shift click, batch-download the selection</sub></td>
+    </tr>
+    <tr>
+      <td><img src="assets/screenshots/media-panel.jpg" alt="Library side panel" /></td>
+      <td><img src="assets/screenshots/history-panel.jpg" alt="Download history" /></td>
+    </tr>
+    <tr>
+      <td align="center"><sub>Library side panel: search by author, expand to the fullscreen grid</sub></td>
+      <td align="center"><sub>Download history: thumbnails + sizes at a glance, viewed in-app from local files</sub></td>
     </tr>
   </table>
 </div>

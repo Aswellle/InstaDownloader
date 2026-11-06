@@ -18,7 +18,7 @@ import {
 } from 'lucide-react'
 import type { MediaRow } from '@shared/types'
 import { cn, formatDate, formatDuration } from '@/lib/utils'
-import { localFileUrl } from '@/lib/local-file'
+import { localFileUrl, localThumbUrl } from '@/lib/local-file'
 import { Button, Checkbox, Input } from '@/components/ui/primitives'
 import { SmartImage } from '@/components/ui/smart-image'
 import { useI18n, type TFn } from '@/i18n'
@@ -544,8 +544,12 @@ function FullscreenCard({
   onOpen: () => void
 }) {
   const { t } = useI18n()
-  // 已归档条目直接读本地文件：不受 CDN 签名过期影响，也不用再走图片缓存
-  const thumb = item.path ? localFileUrl(item.path) : item.thumb_url || item.url
+  // 已归档条目优先读本地缩略图（nativeImage 缩放后的 480px 变体，几十 KB）：
+  // 整张原图 1–2 MB，一屏十几张会把网格加载拖到数秒甚至超时破图。
+  // 本地缩略图不可用（nativeImage 解不了的格式 / 文件被移动）时回退远端
+  // thumb_url —— 那条路有图片缓存管线兜底。
+  const [localFailed, setLocalFailed] = useState(false)
+  useEffect(() => setLocalFailed(false), [item.path, item.id])
   // 不做逐卡入场动画：大库（数百项）下每张卡片各跑一次 framer-motion
   // 动画会让打开/筛选时明显掉帧；图片本身由 SmartImage 淡入。
   return (
@@ -565,9 +569,24 @@ function FullscreenCard({
       }}
     >
       <div className="aspect-square w-full bg-surface-hover">
-        {/* 视频缩略场景显示封面帧（thumb_url 或远端 poster），点击后才进查看器播放；
-            直接嵌播放器会因 CDN 链接过期一片报错，且多个自动播放互相抢资源 */}
-        <SmartImage src={thumb} className="h-full w-full object-cover" />
+        {item.path && !localFailed ? (
+          <img
+            src={localThumbUrl(item.path)}
+            alt=""
+            loading="lazy"
+            decoding="async"
+            onError={() => setLocalFailed(true)}
+            className="h-full w-full object-cover"
+          />
+        ) : (
+          /* 视频缩略场景显示封面帧（thumb_url 或远端 poster），点击后才进查看器播放；
+              直接嵌播放器会因 CDN 链接过期一片报错，且多个自动播放互相抢资源 */
+          <SmartImage
+            src={item.thumb_url || item.url}
+            className="h-full w-full object-cover"
+            fallbackClassName="h-full w-full"
+          />
+        )}
       </div>
 
       {/* 类型角标（固定深色底 → 字面量白，勿用主题色） */}

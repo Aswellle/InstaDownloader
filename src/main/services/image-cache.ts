@@ -1,4 +1,4 @@
-import { app, net, protocol } from 'electron'
+import { app, nativeImage, net, protocol } from 'electron'
 import { createHash } from 'node:crypto'
 import {
   closeSync,
@@ -121,8 +121,8 @@ export function serveImageCache(): void {
   })
 
   // 本地已下载文件的缩略图与"应用内查看"（下载历史用）。
-  // URL 形如 instadown-file://local/<encoded abs path>；仅放行存在且扩展名
-  // 可渲染的文件，避免成为任意文件读取通道。
+  // URL 形如 instadown-file://local/<encoded abs path>[?thumb=1]；仅放行存在
+  // 且扩展名可渲染的文件，避免成为任意文件读取通道。
   // 支持 Range：应用内 <video> 播放/拖动进度条依赖 206 响应，否则只能从头播。
   protocol.handle(FILE_SCHEME, async (request) => {
     try {
@@ -134,6 +134,22 @@ export function serveImageCache(): void {
         return new Response('bad path', { status: 400 })
       }
       if (!existsSync(path)) return new Response('not found', { status: 404 })
+
+      // 缩略图变体（?thumb=1）：网格里的展示不需要整张原图 —— 一张
+      // 2400×3008 的原图有 1–2 MB，一屏十几张会把加载拖到数秒甚至
+      // 超时破图。用 Electron 原生解码缩放成最长边 480px 的 JPEG 并按
+      // (路径 + 修改时间) 缓存；nativeImage 解不了的格式回退原图。
+      if (u.searchParams.get('thumb') === '1') {
+        const thumb = localThumbnail(path)
+        if (thumb) {
+          return new Response(new Uint8Array(thumb), {
+            status: 200,
+            headers: { 'content-type': 'image/jpeg', 'cache-control': 'no-cache' }
+          })
+        }
+        // 生成失败 → 继续走原图全量响应
+      }
+
       const ext = (path.split('.').pop() ?? 'jpg').toLowerCase()
       const mime = mimeFromExt(ext)
       const size = statSync(path).size
@@ -183,16 +199,51 @@ export function serveImageCache(): void {
   })
 }
 
-/** 下载并缓存；返回本地协议地址。失败时抛出，调用方回退到原始 URL。
- *  网络失败重试一次：IG CDN 对并发的高分辨率图片请求偶发断连，
- *  而回退路径（渲染层直接 <img> 远端 URL）会被 CDN 防盗链拒绝 ——
- *  单次失败意味着这张缩略图永久破图，重试一次能救回绝大多数。 */
-export async function cacheImage(url: string): Promise<string> {
+/**
+ * 本地文件的缩略图字节：nativeImage 解码后缩放（最长边 480px），JPEG 落盘。
+ * 缓存键含文件修改时间 —— 文件被重新下载（内容变化）后自动失效重生成。
+ * 解码失败（webp/动图等 nativeImage 不支持的格式）返回 null，调用方回退原图。
+ */
+function localThumbnail(path: string): Buffer | null {
   try {
-    return await cacheImageOnce(url)
+    const dir = join(app.getPath('userData'), 'thumb-cache')
+    if (!existsSync(dir)) mkdirSync(dir, { recursive: true })
+    const key = createHash('sha1')
+      .update(`${path}|${statSync(path).mtimeMs}`)
+      .digest('hex')
+    const dest = join(dir, `${key}.jpg`)
+    if (existsSync(dest)) return readFileSync(dest)
+
+    const img = nativeImage.createFromPath(path)
+    if (img.isEmpty()) return null
+    const size = img.getSize()
+    const longest = Math.max(size.width, size.height)
+    const scaled = longest > 480 ? img.resize({ width: Math.round((480 * size.width) / longest), height: Math.round((480 * size.height) / longest) }) : img
+    const jpeg = scaled.toJPEG(82)
+    if (jpeg.length === 0) return null
+    writeFileSync(dest, jpeg)
+    return jpeg
   } catch {
-    return cacheImageOnce(url)
+    return null
   }
+}
+
+/** 下载并缓存；返回本地协议地址。失败时抛出，调用方回退到原始 URL。
+ *  网络失败带退避重试两次：IG CDN 对并发的高分辨率图片请求偶发断连，
+ *  而回退路径（渲染层直接 <img> 远端 URL）会被 CDN 防盗链拒绝 ——
+ *  单次失败意味着这张缩略图永久破图，重试能救回绝大多数。
+ *  高延迟网络下首次尝试常在建立连接阶段就失败，退避后再试成功率显著更高。 */
+export async function cacheImage(url: string): Promise<string> {
+  let lastErr: unknown
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      if (attempt > 0) await new Promise((r) => setTimeout(r, 800 * attempt))
+      return await cacheImageOnce(url)
+    } catch (e) {
+      lastErr = e
+    }
+  }
+  throw lastErr instanceof Error ? lastErr : new Error(String(lastErr))
 }
 
 async function cacheImageOnce(url: string): Promise<string> {

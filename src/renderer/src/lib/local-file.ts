@@ -15,6 +15,15 @@ export function localFileUrl(path: string): string {
   return `instadown-file://local/${encodeURIComponent(path)}`
 }
 
+/**
+ * 路径 → 本地缩略图协议地址（主进程用 nativeImage 缩到最长边 480px 并缓存）。
+ * 网格展示专用：整张原图有 1–2 MB，一屏十几张会把加载拖到数秒甚至超时破图。
+ * 主进程生成失败时按原图回退（协议内部处理），渲染层无需关心。
+ */
+export function localThumbUrl(path: string): string {
+  return `instadown-file://local/${encodeURIComponent(path)}?thumb=1`
+}
+
 export function isRenderableImage(path: string): boolean {
   return IMG_EXT.test(path)
 }

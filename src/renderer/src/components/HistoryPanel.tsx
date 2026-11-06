@@ -128,15 +128,18 @@ export function HistoryPanel({ open, onClose, onOpenViewer }: HistoryPanelProps)
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
+            transition={{ duration: 0.22 }}
             className="absolute inset-0 z-40 bg-overlay"
             onClick={onClose}
           />
+          {/* 抽屉滑入用缓出曲线而非弹簧：弹簧在收尾处的回弹会让列表内容
+              跟着抖动，与"平滑抽屉"的预期相悖；0.34s 的标准缓出在
+              快与稳之间取平衡，遮罩淡出略慢于抽屉避免闪黑。 */}
           <motion.div
-            initial={{ x: '-100%' }}
-            animate={{ x: 0 }}
-            exit={{ x: '-100%' }}
-            transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+            initial={{ x: '-100%', opacity: 0.6 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: '-100%', opacity: 0.6 }}
+            transition={{ duration: 0.34, ease: [0.32, 0.72, 0, 1] }}
             className="absolute left-0 top-0 z-50 flex h-full w-80 flex-col border-r border-app bg-app"
           >
             {/* Header */}

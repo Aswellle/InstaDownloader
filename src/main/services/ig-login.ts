@@ -456,7 +456,9 @@ async function listProfileShortcodesImpl(
     if (/\/accounts\/login/i.test(win.webContents.getURL())) {
       return { ok: false, shortcodes: [], notLoggedIn: true }
     }
-    // IG 的帖子网格由 JS 异步填充，固定等待不可靠：轮询直到出现链接
+    // IG 的帖子网格由 JS 异步填充，固定等待不可靠：轮询直到出现链接。
+    // 上限要放宽：数千万粉丝级的重主页（如 natgeo）冷渲染远超 20s，
+    // 轮询太短会把"还在渲染"误判为"用户不存在"。
     const js = `(async () => {
       // 注意：IG 的帖子链接是**绝对 URL**（https://www.instagram.com/p/XXX/），
       // 因此正则不能锚定行首的 "/p/"，否则一个都匹配不到。
@@ -468,9 +470,9 @@ async function listProfileShortcodesImpl(
         }
         return out
       }
-      // 轮询等待网格渲染（最多 ~20s）
+      // 轮询等待网格渲染（最多 ~45s）
       let codes = collect()
-      for (let i = 0; i < 20 && codes.length === 0; i++) {
+      for (let i = 0; i < 45 && codes.length === 0; i++) {
         await new Promise((r) => setTimeout(r, 1000))
         codes = collect()
       }
@@ -488,7 +490,7 @@ async function listProfileShortcodesImpl(
     })()`
     const raw = (await Promise.race([
       win.webContents.executeJavaScript(js, true) as Promise<string>,
-      new Promise<null>((r) => setTimeout(() => r(null), 60000))
+      new Promise<null>((r) => setTimeout(() => r(null), 90000))
     ])) as string | null
     if (!raw) return { ok: false, shortcodes: [], error: 'timeout' }
     return { ok: true, shortcodes: JSON.parse(raw) as string[] }

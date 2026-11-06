@@ -94,17 +94,17 @@ export const zhCN = {
     loadingMore: '正在加载…'
   },
 
-  // ── 错误文案（worker/AppError code → 文案） ──
+  // ── 错误文案（worker/AppError code → 文案）：说明发生了什么 + 下一步做什么 ──
   error: {
-    E_INVALID_URL: '链接无效：请输入 Instagram 帖子 / Reels / 主页链接或用户名',
-    E_PARSE_FAILED: '解析失败：未找到可下载的媒体',
-    E_IG_RATE_LIMIT: '请求过于频繁：Instagram 限流中，请稍后再试',
-    E_IG_LOGIN_REQUIRED: '需要登录：请在设置中粘贴 Instagram 会话 Cookie（仅保存在本机）',
+    E_INVALID_URL: '链接无效：请输入 Instagram 帖子 / Reels / 主页链接，或直接输入用户名',
+    E_PARSE_FAILED: '未解析到可下载的媒体：帖子可能已被删除，可返回重试或换个链接',
+    E_IG_RATE_LIMIT: '访问过于频繁，Instagram 暂时限流：请等一两分钟再点重试，频繁重试会延长限制',
+    E_IG_LOGIN_REQUIRED: '需要登录才能查看：点击下方按钮登录 Instagram（凭据只提交给官方）',
     E_IG_PRIVATE: '该账号为私密账号，无法获取',
-    E_IG_NOT_FOUND: '未找到：帖子或用户不存在（也可能是私密内容）',
-    E_WORKER_DOWN: '解析服务未就绪：正在重启，请稍后重试',
-    E_NETWORK: '网络错误：请检查网络连接',
-    E_DISK: '磁盘错误：无法写入目标目录',
+    E_IG_NOT_FOUND: '没有找到这条内容：帖子或用户可能不存在、已改名或仅私密可见',
+    E_WORKER_DOWN: '解析服务暂时不可用，正在尝试恢复：可点击下方重试；进行中的下载不受影响',
+    E_NETWORK: '网络不稳定，内容没有加载完整：请检查网络后点击下方重试；已下载的文件不受影响',
+    E_DISK: '磁盘写入失败：请检查下载目录所在磁盘的空间与权限，或在设置中更换目录',
     E_CANCELED: '已取消'
   },
 
@@ -174,7 +174,15 @@ export const zhCN = {
     resume: '继续',
     cancel: '取消',
     remove: '移除记录',
-    openFolder: '打开所在文件夹'
+    openFolder: '打开所在文件夹',
+    confirmRemoveTitle: '移除这条任务记录？',
+    confirmRemoveBody: '「{name}」的任务记录将从列表移除；已保存到磁盘的文件不受影响。',
+    errOffline: '网络未连接：请检查网络后点击重试',
+    errNetwork: '网络连接中断：可能是网络波动，请点击重试',
+    errDns: '无法连接到服务器：请检查网络或代理设置后重试',
+    errForbidden: '内容被拒绝访问：链接可能已过期，请返回重新解析后再试',
+    errGone: '内容已不存在：链接可能已失效，请返回重新解析后再试',
+    errGeneric: '下载未完成：请点击重试；若反复失败，请返回重新解析该内容'
   },
 
   // ── 历史面板 ──
@@ -429,6 +437,7 @@ export const zhCN = {
     pythonRetry: '重试检测',
     pythonReadyToast: '解析服务已恢复（Python {version}）',
   },
+
 
   // ── 拖拽 ──
   drag: {

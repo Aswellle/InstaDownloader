@@ -88,15 +88,15 @@ export const en = {
   },
 
   error: {
-    E_INVALID_URL: 'Invalid link: enter an Instagram post / Reels / profile link or a username',
-    E_PARSE_FAILED: 'Parse failed: no downloadable media found',
-    E_IG_RATE_LIMIT: 'Too many requests: Instagram is rate-limiting, try again later',
-    E_IG_LOGIN_REQUIRED: 'Login required: paste an Instagram session cookie in Settings (stored locally only)',
+    E_INVALID_URL: 'Invalid link: enter an Instagram post / Reels / profile link, or type a username',
+    E_PARSE_FAILED: 'No downloadable media found: the post may have been deleted — go back and retry, or try another link',
+    E_IG_RATE_LIMIT: 'Too many requests — Instagram is rate-limiting: wait a minute or two, then retry; frequent retries extend the limit',
+    E_IG_LOGIN_REQUIRED: 'Login required to view this: click the button below to log in to Instagram (credentials go to Instagram only)',
     E_IG_PRIVATE: 'This account is private and cannot be fetched',
-    E_IG_NOT_FOUND: 'Not found: the post or user does not exist (or is private)',
-    E_WORKER_DOWN: 'Parser not ready: restarting, please try again shortly',
-    E_NETWORK: 'Network error: check your connection',
-    E_DISK: 'Disk error: cannot write to the target directory',
+    E_IG_NOT_FOUND: 'Nothing found here: the post or user may not exist, have been renamed, or be private',
+    E_WORKER_DOWN: 'The parser is temporarily unavailable and is recovering: try again below; active downloads are unaffected',
+    E_NETWORK: 'The network is unstable and content did not finish loading: check your connection and retry below; downloaded files are unaffected',
+    E_DISK: 'Disk write failed: check free space and permissions for the download drive, or pick another folder in Settings',
     E_CANCELED: 'Canceled'
   },
 
@@ -162,7 +162,15 @@ export const en = {
     resume: 'Resume',
     cancel: 'Cancel',
     remove: 'Remove record',
-    openFolder: 'Show in folder'
+    openFolder: 'Show in folder',
+    confirmRemoveTitle: 'Remove this task record?',
+    confirmRemoveBody: 'The record for "{name}" will be removed from the list; files already downloaded to disk are not affected.',
+    errOffline: 'No network connection: check your network and retry',
+    errNetwork: 'Connection lost — possibly a network hiccup; retry to continue',
+    errDns: 'Cannot reach the server: check your network or proxy settings and retry',
+    errForbidden: 'Access to the content was denied: the link may have expired — re-parse it and try again',
+    errGone: 'The content no longer exists: the link may be dead — re-parse it and try again',
+    errGeneric: 'Download did not finish: retry; if it keeps failing, re-parse the content'
   },
 
   history: {

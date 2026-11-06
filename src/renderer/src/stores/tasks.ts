@@ -83,7 +83,9 @@ export const useTaskStore = create<TaskState>((set) => ({
         tasks: patchTask(s.tasks, ev.id, {
           status: ev.status,
           error: ev.error ?? undefined,
-          destPath: ev.destPath ?? undefined,
+          // destPath 类型是 string：事件未携带时保留空串而不是 undefined，
+          // 否则渲染层按 string 使用的代码（如取文件名）会崩
+          destPath: ev.destPath ?? '',
           speed: ev.status === 'SUCCESS' || ev.status === 'FAILED' || ev.status === 'PAUSED' ? 0 : undefined
         })
       }

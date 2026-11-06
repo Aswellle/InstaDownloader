@@ -20,6 +20,7 @@ import { Badge, Button, Progress } from '@/components/ui/primitives'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { useI18n } from '@/i18n'
 import { cn, formatBytes, formatSpeed } from '@/lib/utils'
+import { friendlyTaskError } from '@/lib/task-error'
 
 const STATUS_TONE: Record<TaskSnapshot['status'], 'waiting' | 'downloading' | 'paused' | 'success' | 'failed' | 'canceled'> = {
   WAITING: 'waiting',
@@ -50,6 +51,8 @@ export function TaskDock() {
   const hasCompleted = tasks.some((t) => t.status === 'SUCCESS' || t.status === 'FAILED' || t.status === 'CANCELED')
   const completedCount = tasks.filter((t) => t.status === 'SUCCESS' || t.status === 'FAILED' || t.status === 'CANCELED').length
   const [confirmClear, setConfirmClear] = useState(false)
+  /** 待确认移除的单条任务（行内 X 按钮） */
+  const [pendingRemove, setPendingRemove] = useState<TaskSnapshot | null>(null)
   const clearCompleted = () => {
     const completed = tasks.filter((t) => t.status === 'SUCCESS' || t.status === 'FAILED' || t.status === 'CANCELED')
     for (const t of completed) remove(t.id)
@@ -58,8 +61,11 @@ export function TaskDock() {
 
   return (
     <div className="shrink-0 border-t border-app bg-app">
-      {/* 汇总条。行容器不能用 button：内部还有"清除已完成"按钮，
-          button 嵌 button 是无效 HTML，且点击会冒泡触发折叠/展开 */}
+      {/* 汇总条（折叠态）。行容器不能用 button：内部还有"清除已完成"按钮，
+          button 嵌 button 是无效 HTML，且点击会冒泡触发折叠/展开。
+          布局分区从左到右固定：图标+标题（shrink-0）→ 进度（弹性，让位）→
+          速度/清除/箭头（shrink-0）。窄窗口按 md/sm 逐级隐藏次要信息，
+          任何宽度下标题与按钮都完整可读、互不遮挡。 */}
       <div
         role="button"
         tabIndex={0}
@@ -74,24 +80,24 @@ export function TaskDock() {
           }
         }}
       >
-        <Download className="h-4 w-4 text-rose-400" />
-        <span className="text-sm text-app">
+        <Download className="h-4 w-4 shrink-0 text-rose-400" />
+        <span className="shrink-0 whitespace-nowrap text-sm text-app">
           {t('task.title')}
-          <span className="ml-1.5 text-muted">
+          <span className="ml-1.5 whitespace-nowrap text-muted">
             {active.length > 0 ? t('task.activeCount', { n: active.length }) : t('task.idle')}
             {done > 0 && ` · ${t('task.completed', { n: done })}`}
             {failed > 0 && <span className="text-rose-400"> · {t('task.failed', { n: failed })}</span>}
           </span>
         </span>
         {active.length > 0 && (
-          <span className="text-xs text-subtle">{formatSpeed(totalSpeed)}</span>
+          <span className="hidden shrink-0 text-xs text-subtle sm:inline">{formatSpeed(totalSpeed)}</span>
         )}
         {(active.length > 0 || done > 0) && (
-          <div className="hidden max-w-48 flex-1 sm:block">
+          <div className="ml-1 hidden min-w-8 flex-1 md:block">
             <Progress value={active.length > 0 ? overall : 1} className="h-1" />
           </div>
         )}
-        <span className="ml-auto flex items-center gap-2">
+        <span className="ml-auto flex shrink-0 items-center gap-1">
           {hasCompleted && (
             <Button
               variant="ghost"
@@ -103,7 +109,7 @@ export function TaskDock() {
               title={t("task.clearTitle")}
             >
               <Trash2 className="h-3.5 w-3.5" />
-              <span className="ml-1">{t("task.clearCompleted")}</span>
+              <span className="ml-1 hidden lg:inline">{t("task.clearCompleted")}</span>
             </Button>
           )}
           {expanded ? <ChevronDown className="h-4 w-4" /> : <ChevronUp className="h-4 w-4" />}
@@ -122,14 +128,15 @@ export function TaskDock() {
           >
             <div className="max-h-60 space-y-0.5 overflow-y-auto px-2 pb-2">
               {tasks.map((t) => (
-                <TaskRow key={t.id} task={t} />
+                <TaskRow key={t.id} task={t} onRemove={setPendingRemove} />
               ))}
             </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* 清除已完成：涉及移除任务记录（不可从 UI 恢复），需确认 */}
+      {/* 清除已完成 / 移除单条：涉及删除任务记录（不可从 UI 恢复），需确认。
+          确认框不允许点遮罩关闭 —— 必须在两个明确选项里做出选择。 */}
       <ConfirmDialog
         open={confirmClear}
         title={t("task.confirmClearTitle")}
@@ -138,11 +145,28 @@ export function TaskDock() {
         onConfirm={clearCompleted}
         onCancel={() => setConfirmClear(false)}
       />
+      <ConfirmDialog
+        open={!!pendingRemove}
+        title={t('task.confirmRemoveTitle')}
+        message={
+          pendingRemove
+            ? t('task.confirmRemoveBody', {
+                name: `${pendingRemove.author}${pendingRemove.shortcode ? ` · ${pendingRemove.shortcode}` : ''}`
+              })
+            : ''
+        }
+        confirmLabel={t('task.remove')}
+        onConfirm={() => {
+          if (pendingRemove) remove(pendingRemove.id)
+          setPendingRemove(null)
+        }}
+        onCancel={() => setPendingRemove(null)}
+      />
     </div>
   )
 }
 
-function TaskRow({ task }: { task: TaskSnapshot }) {
+function TaskRow({ task, onRemove }: { task: TaskSnapshot; onRemove: (task: TaskSnapshot) => void }) {
   // 逐字段选择：selector 返回稳定引用。返回对象字面量会让每帧产生新引用，
   // 触发无限重渲染（React error #185 → 黑屏）。
   const pause = useTaskStore((s) => s.pause)
@@ -170,7 +194,12 @@ function TaskRow({ task }: { task: TaskSnapshot }) {
           {task.shortcode ? ` · ${task.shortcode}` : ''}
           {task.indexNo > 1 ? ` #${task.indexNo}` : ''}
         </div>
-        <div className="truncate text-[10px] text-subtle">{task.destPath}</div>
+        {/* 只显示文件名（含扩展名）：完整路径塞在窄列里只会把扩展名挤到
+            看不见；完整路径放悬停提示。destPath 在事件合并的快照里可能
+            尚未到达（undefined），不能假设必有。 */}
+        <div className="truncate text-[10px] text-subtle" title={task.destPath}>
+          {(task.destPath ?? '').split(/[\\/]/).pop()}
+        </div>
       </div>
 
       <Badge tone={tone} className="shrink-0">{statusLabel}</Badge>
@@ -192,8 +221,12 @@ function TaskRow({ task }: { task: TaskSnapshot }) {
           {task.speed > 0 && running && <span className="text-subtle"> · {formatSpeed(task.speed)}</span>}
         </span>
         {task.status === 'FAILED' && task.error && (
-          <span className="truncate text-[11px] text-rose-400/90" title={task.error}>
-            {task.error}
+          /* 友好文案说明发生了什么与能做什么；原始错误放悬停提示供排查 */
+          <span
+            className="min-w-0 truncate text-[11px] text-rose-400/90"
+            title={task.error}
+          >
+            {friendlyTaskError(task.error, t)}
           </span>
         )}
       </div>
@@ -230,7 +263,12 @@ function TaskRow({ task }: { task: TaskSnapshot }) {
           </Button>
         )}
         {['SUCCESS', 'FAILED', 'CANCELED'].includes(task.status) && (
-          <Button variant="ghost" size="icon" title={t("task.remove")} onClick={() => remove(task.id)}>
+          <Button
+            variant="ghost"
+            size="icon"
+            title={t("task.remove")}
+            onClick={() => onRemove(task)}
+          >
             <X className="h-3.5 w-3.5" />
           </Button>
         )}

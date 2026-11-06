@@ -43,6 +43,8 @@ const api = {
   // 系统（若钉死为 light/dark，'跟随系统'模式会在首次调用后被冻结）。
   setNativeTheme: (mode: 'light' | 'dark' | 'system') =>
     ipcRenderer.invoke('window:setNativeTheme', mode),
+  /** 模态遮罩开合时同步 Windows 窗口控制按钮区的底色（联动变暗/还原） */
+  setChromeDim: (dim: boolean) => ipcRenderer.invoke('window:setChromeDim', dim),
   /** 主进程权威深色值：themeSource 切换不派发 matchMedia change 事件，需广播兜底 */
   onNativeTheme: (cb: (dark: boolean) => void) => {
     const listener = (_e: Electron.IpcRendererEvent, dark: boolean) => cb(dark)

@@ -33,6 +33,14 @@ export function ConfirmDialog({
   onCancel: () => void
 }) {
   const { t } = useI18n()
+  // 模态遮罩联动 Windows 窗口控制按钮区底色（同 Dialog）
+  useEffect(() => {
+    if (!open) return
+    void window.instadown.setChromeDim(true).catch(() => {})
+    return () => {
+      void window.instadown.setChromeDim(false).catch(() => {})
+    }
+  }, [open])
   useEffect(() => {
     if (!open) return
     const onKey = (e: KeyboardEvent) => {
@@ -61,9 +69,9 @@ export function ConfirmDialog({
           exit={{ opacity: 0 }}
           transition={{ duration: 0.12 }}
           className="fixed inset-0 z-[60] flex items-center justify-center bg-overlay p-6"
-          onMouseDown={(e) => {
-            if (e.target === e.currentTarget) onCancel()
-          }}
+          /* 确认框不响应遮罩点击：这类对话框的意义就是强迫用户在两个明确
+              选项里做出选择，点空关闭会让"确认/取消"形同虚设（Esc 保留，
+              它是明确的键盘取消动作）。 */
         >
           <motion.div
             initial={{ scale: 0.96, opacity: 0 }}

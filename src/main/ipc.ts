@@ -54,6 +54,15 @@ function toAppError(e: unknown): AppError {
   return { code, message: err?.message ?? 'unknown error' }
 }
 
+/** 把 #rrggbb 颜色按系数压暗（模拟 50% 黑色遮罩下的合成色） */
+function dimHex(hex: string, factor: number): string {
+  const m = /^#([0-9a-f]{6})$/i.exec(hex)
+  if (!m) return hex
+  const n = parseInt(m[1], 16)
+  const ch = (v: number) => Math.round(v * factor).toString(16).padStart(2, '0')
+  return `#${ch((n >> 16) & 255)}${ch((n >> 8) & 255)}${ch(n & 255)}`
+}
+
 function rowToSnapshot(t: TaskRow) {
   return {
     id: t.id,
@@ -379,29 +388,50 @@ export function registerIpc(deps: IpcDeps): void {
   //      渲染层已黑、控制区仍白，用户实测复现）；
   //  (b) 把 'system' 钉死为解析后的 light/dark：渲染进程的 prefers-color-scheme
   //      随之被冻结，系统主题切换后应用不再跟随。
+  //
+  // chromeDimmed：模态遮罩（Dialog/ConfirmDialog 的 z-50/60 全窗蒙层）会盖暗
+  // 网页内容，但原生绘制的按钮区不受遮罩影响 —— 不同步变暗时按钮区像一块
+  // "孤岛"。模态打开时把按钮区底色按遮罩透明度同步调暗，关闭时还原。
+  let chromeDimmed = false
+  // 节流：setTitleBarOverlay 可能反过来触发 nativeTheme 'updated'，
+  // 不加节流会自激成事件风暴，把主进程事件循环拖死（渲染层所有 IPC
+  // 跟着饿死）。100ms 合并窗口足够覆盖主题切换与遮罩开合的抖动。
+  let applyTimer: NodeJS.Timeout | null = null
   const applyNativeTheme = (): void => {
-    const w = win()
-    if (!w || w.isDestroyed()) return
-    // 以 themeSource 生效后的实际值取色：'system' 时解析为当前系统偏好
-    const dark = nativeTheme.shouldUseDarkColors
-    const { bg, symbol } = themeColorsFor(dark)
-    w.setBackgroundColor(bg)
-    if (process.platform === 'win32') {
-      try {
-        w.setTitleBarOverlay({ color: bg, symbolColor: symbol, height: 40 })
-      } catch (e) {
-        console.error('[theme] setTitleBarOverlay failed:', (e as Error).message)
+    if (applyTimer) return
+    applyTimer = setTimeout(() => {
+      applyTimer = null
+      const w = win()
+      if (!w || w.isDestroyed()) return
+      // 以 themeSource 生效后的实际值取色：'system' 时解析为当前系统偏好
+      const dark = nativeTheme.shouldUseDarkColors
+      const { bg, symbol } = themeColorsFor(dark)
+      w.setBackgroundColor(bg)
+      if (process.platform === 'win32') {
+        try {
+          w.setTitleBarOverlay({
+            color: chromeDimmed ? dimHex(bg, 0.55) : bg,
+            symbolColor: chromeDimmed ? dimHex(symbol, 0.8) : symbol,
+            height: 40
+          })
+        } catch (e) {
+          console.error('[theme] setTitleBarOverlay failed:', (e as Error).message)
+        }
       }
-    }
-    // 渲染进程必须收到权威值：themeSource 切换会更新渲染层的
-    // prefers-color-scheme，但 Electron 不派发对应的 change 事件（实测
-    // matchMedia 的 change 回调为空），且切换瞬间渲染层读到的还是旧值 ——
-    // 表现为"深色 → 跟随系统"后界面卡在深色。广播兜底，重读即修正。
-    w.webContents.send('theme:native', dark)
+      // 渲染进程必须收到权威值：themeSource 切换会更新渲染层的
+      // prefers-color-scheme，但 Electron 不派发对应的 change 事件（实测
+      // matchMedia 的 change 回调为空），且切换瞬间渲染层读到的还是旧值 ——
+      // 表现为"深色 → 跟随系统"后界面卡在深色。广播兜底，重读即修正。
+      w.webContents.send('theme:native', dark)
+    }, 100)
   }
   handle('window:setNativeTheme', (mode: 'light' | 'dark' | 'system') => {
     const next = mode === 'light' || mode === 'dark' || mode === 'system' ? mode : 'system'
     nativeTheme.themeSource = next
+    applyNativeTheme()
+  })
+  handle('window:setChromeDim', (dim: boolean) => {
+    chromeDimmed = !!dim
     applyNativeTheme()
   })
   // 'system' 模式下系统主题变化：原生控件（含 Windows 窗口控制按钮）自行刷新。

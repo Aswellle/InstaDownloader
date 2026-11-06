@@ -80,6 +80,8 @@ declare global {
       igLoginStatus(): Promise<{ persisted: boolean; partition: boolean; profile: { username: string; avatar: string } | null }>
       /** 原始主题模式（'system' 交由主进程解析，保持系统跟随不被冻结） */
       setNativeTheme(mode: 'light' | 'dark' | 'system'): Promise<void>
+      /** 模态遮罩开合时同步 Windows 窗口控制按钮区的底色（联动变暗/还原） */
+      setChromeDim(dim: boolean): Promise<void>
       /** 主进程权威深色值广播（themeSource 切换不触发 matchMedia change 事件） */
       onNativeTheme(cb: (dark: boolean) => void): () => void
       /** 应用版本号（设置 → 关于） */

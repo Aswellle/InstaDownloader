@@ -8,15 +8,28 @@ export function Dialog({
   onClose,
   title,
   children,
-  wide = false
+  wide = false,
+  bodyScroll = true
 }: {
   open: boolean
   onClose: () => void
   title?: string
   children: ReactNode
   wide?: boolean
+  /** 内容区是否可滚动；媒体查看器等"自身已适配高度"的模态应关掉，
+   *  否则右侧会出现一条几乎不动、令人困惑的滚动条 */
+  bodyScroll?: boolean
 }) {
   const dialogRef = useRef<HTMLDivElement>(null)
+  // 模态遮罩盖暗网页内容，但 Windows 原生窗口控制按钮区不受遮罩影响 ——
+  // 不同步时按钮区像一块孤岛。开合时通知主进程联动调暗/还原按钮区底色。
+  useEffect(() => {
+    if (!open) return
+    void window.instadown.setChromeDim(true).catch(() => {})
+    return () => {
+      void window.instadown.setChromeDim(false).catch(() => {})
+    }
+  }, [open])
   useEffect(() => {
     if (!open) return
     const prevFocus = document.activeElement as HTMLElement | null
@@ -84,7 +97,7 @@ export function Dialog({
                 </button>
               </div>
             )}
-            <div className="min-h-0 flex-1 overflow-y-auto">{children}</div>
+            <div className={cn('min-h-0 flex-1', bodyScroll ? 'overflow-y-auto' : 'overflow-hidden')}>{children}</div>
           </motion.div>
         </motion.div>
       )}

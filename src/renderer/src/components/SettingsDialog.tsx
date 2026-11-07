@@ -247,7 +247,7 @@ export function SettingsDialog({ open, onClose }: { open: boolean; onClose: () =
                     'h-8 w-8 rounded-lg text-sm transition-colors',
                     n === concurrency
                       ? 'bg-rose-500 text-white'
-                      : 'bg-surface-hover text-muted hover:bg-surface-active'
+                      : 'bg-surface-hover text-muted hover:bg-surface-active hover:text-app'
                   )}
                 >
                   {n}
@@ -280,8 +280,8 @@ export function SettingsDialog({ open, onClose }: { open: boolean; onClose: () =
             <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-emerald-500" />
             <div className="min-w-0">
               <div className="text-xs font-medium text-app">{t("settings.anonymousFirstLong")}</div>
-              <div className="mt-0.5 text-[11px] leading-relaxed text-muted">{t("settings.anonymousFirstLongHint")}</div>
-              <div className="mt-0.5 text-[11px] text-subtle">{t("settings.anonymousFirstAlways")}</div>
+              <div className="mt-0.5 text-xs leading-relaxed text-muted">{t("settings.anonymousFirstLongHint")}</div>
+              <div className="mt-0.5 text-xs text-subtle">{t("settings.anonymousFirstAlways")}</div>
             </div>
           </div>
           <Toggle
@@ -330,7 +330,7 @@ export function SettingsDialog({ open, onClose }: { open: boolean; onClose: () =
                   <div className="truncate text-xs font-medium text-app">
                     {profile?.username ? t('settings.loggedInAsShort', { name: profile.username }) : t('settings.loggedInBadge')}
                   </div>
-                  <div className="text-[11px] text-subtle">
+                  <div className="text-xs text-subtle">
                     {t("settings.sessionEncryptedNote")}
                   </div>
                 </div>
@@ -341,7 +341,7 @@ export function SettingsDialog({ open, onClose }: { open: boolean; onClose: () =
             </div>
           ) : (
             <>
-              <p className="text-[11px] leading-relaxed text-subtle">
+              <p className="text-xs leading-relaxed text-subtle">
                 {t("settings.notLoggedInGuide")}
               </p>
               <Button
@@ -367,7 +367,7 @@ export function SettingsDialog({ open, onClose }: { open: boolean; onClose: () =
                 {cache ? `${t('settings.filesCount', { n: cache.files })} · ${formatBytes(cache.bytes)}` : t('settings.statsLoading')}
               </span>
             </div>
-            <p className="text-[11px] leading-relaxed text-subtle">
+            <p className="text-xs leading-relaxed text-subtle">
               {t("settings.cacheHint")}
             </p>
             <Button
@@ -388,7 +388,7 @@ export function SettingsDialog({ open, onClose }: { open: boolean; onClose: () =
               </span>
               <span className="tabular-nums text-app">{t("settings.recordsCount", { n: historyCount })}</span>
             </div>
-            <p className="text-[11px] leading-relaxed text-subtle">
+            <p className="text-xs leading-relaxed text-subtle">
               {t("settings.historyHint.pre")}<span className="font-medium text-muted">{t("settings.historyHint.bold")}</span>{t("settings.historyHint.post")}
             </p>
             <Button
@@ -447,7 +447,7 @@ export function SettingsDialog({ open, onClose }: { open: boolean; onClose: () =
               <Star className="h-3.5 w-3.5 shrink-0 text-amber-400" />
             </button>
 
-            <p className="text-[11px] leading-relaxed text-subtle">
+            <p className="text-xs leading-relaxed text-subtle">
               {t("settings.starPromptPre")}
               <span className="mx-0.5 inline-flex items-center gap-0.5 text-amber-500">
                 <Star className="h-3 w-3" />Star
@@ -517,7 +517,7 @@ function Group({
         <Icon className="mt-0.5 h-4 w-4 shrink-0 text-muted" />
         <div className="min-w-0">
           <h3 className="text-xs font-semibold text-app">{title}</h3>
-          <p className="text-[11px] text-subtle">{desc}</p>
+          <p className="text-xs text-subtle">{desc}</p>
         </div>
       </div>
       <div className="space-y-3 pl-6">{children}</div>
@@ -538,7 +538,7 @@ function Field({
     <div>
       <label className="text-xs font-medium text-muted">{label}</label>
       <div className="mt-1.5">{children}</div>
-      {hint && <p className="mt-1.5 text-[11px] leading-relaxed text-subtle">{hint}</p>}
+      {hint && <p className="mt-1.5 text-xs leading-relaxed text-subtle">{hint}</p>}
     </div>
   )
 }
@@ -562,7 +562,7 @@ function Toggle({
     <div className="flex items-start justify-between gap-4">
       <div className="min-w-0">
         <div className="text-xs font-medium text-muted">{label}</div>
-        <p className="mt-0.5 text-[11px] leading-relaxed text-subtle">{hint}</p>
+        <p className="mt-0.5 text-xs leading-relaxed text-subtle">{hint}</p>
       </div>
       <button
         role="switch"

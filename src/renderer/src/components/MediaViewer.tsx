@@ -195,7 +195,7 @@ export function MediaViewer({
                 <Keyboard className="h-3.5 w-3.5" />
               </button>
               {showKeys && (
-                <span className="shrink-0 text-[11px] text-subtle">
+                <span className="shrink-0 text-xs text-subtle">
                   {hideDownload ? t("viewer.keysHintNoDownload") : t("viewer.keysHint")}
                 </span>
               )}

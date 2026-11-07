@@ -198,7 +198,7 @@ function TaskRow({ task, onRemove }: { task: TaskSnapshot; onRemove: (task: Task
             看不见；完整路径放悬停提示。destPath 在事件合并的快照里可能
             尚未到达（undefined），不能假设必有；路径未计划时不渲染空行。 */}
         {(task.destPath ?? '').split(/[\\/]/).pop() && (
-          <div className="truncate text-[10px] text-subtle" title={task.destPath}>
+          <div className="truncate text-xs text-subtle" title={task.destPath}>
             {(task.destPath ?? '').split(/[\\/]/).pop()}
           </div>
         )}
@@ -216,7 +216,7 @@ function TaskRow({ task, onRemove }: { task: TaskSnapshot; onRemove: (task: Task
             className={task.status === 'SUCCESS' ? '[&>div]:bg-emerald-500' : undefined}
           />
         )}
-        <span className="w-28 shrink-0 text-right text-[11px] tabular-nums text-muted">
+        <span className="w-28 shrink-0 text-right text-xs tabular-nums text-muted">
           {task.total > 0
             ? `${task.status === 'SUCCESS' ? 100 : Math.round(task.progress * 100)}% · ${formatBytes(task.downloaded)}/${formatBytes(task.total)}`
             : formatBytes(task.downloaded)}
@@ -225,7 +225,7 @@ function TaskRow({ task, onRemove }: { task: TaskSnapshot; onRemove: (task: Task
         {task.status === 'FAILED' && task.error && (
           /* 友好文案说明发生了什么与能做什么；原始错误放悬停提示供排查 */
           <span
-            className="min-w-0 truncate text-[11px] text-rose-400/90"
+            className="min-w-0 truncate text-xs text-rose-400/90"
             title={task.error}
           >
             {friendlyTaskError(task.error, t)}

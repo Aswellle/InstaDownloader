@@ -300,7 +300,7 @@ export function LibraryFullscreen({
                       transition={{ duration: 0.12 }}
                       className="absolute right-0 top-11 z-20 w-64 rounded-xl border border-app bg-surface p-2 shadow-2xl"
                     >
-                      <div className="px-2 pb-1 text-[11px] font-medium text-subtle">
+                      <div className="px-2 pb-1 text-xs font-medium text-subtle">
                         {t('libFull.authorFilterTooltip')}
                       </div>
                       <div className="max-h-52 overflow-y-auto">
@@ -325,7 +325,7 @@ export function LibraryFullscreen({
                         ))}
                       </div>
                       <div className="my-1.5 h-px bg-app-strong" />
-                      <div className="px-2 pb-1 text-[11px] font-medium text-subtle">
+                      <div className="px-2 pb-1 text-xs font-medium text-subtle">
                         {t('libFull.sortTooltip')}
                       </div>
                       {SORT_KEYS.map((key) => (

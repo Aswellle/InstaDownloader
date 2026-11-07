@@ -139,7 +139,7 @@ export function IgAccountDialog({
               <div className="mb-2 flex items-center gap-1.5 text-xs font-medium text-muted">
                 <ShieldCheck className="h-3.5 w-3.5" /> {t('account.policyTitle')}
               </div>
-              <div className="space-y-2 rounded-lg border border-emerald-500/30 bg-emerald-500/5 p-3 text-[11px] leading-relaxed">
+              <div className="space-y-2 rounded-lg border border-emerald-500/30 bg-emerald-500/5 p-3 text-xs leading-relaxed">
                 <p className="text-app">
                   <span className="font-medium">{t('account.policyNever')}</span>
                   {t('account.policyNeverBody')}
@@ -154,7 +154,7 @@ export function IgAccountDialog({
               <div className="mb-2 flex items-center gap-1.5 text-xs font-medium text-muted">
                 <ShieldCheck className="h-3.5 w-3.5" /> {t('account.sessionStatus')}
               </div>
-              <div className="space-y-1.5 rounded-lg border border-app bg-surface-hover/30 p-3 text-[11px]">
+              <div className="space-y-1.5 rounded-lg border border-app bg-surface-hover/30 p-3 text-xs">
                 <StatusRow label={t('account.statusPersisted')} ok={status?.persisted ?? false} okText={t('account.sessionValid')} badText={t('account.sessionInvalid')} />
                 <StatusRow label={t('account.statusPartition')} ok={status?.partition ?? false} okText={t('account.sessionValid')} badText={t('account.sessionInvalid')} />
                 <p className="pt-1 leading-relaxed text-subtle">{t('account.statusEncryptedNote')}</p>
@@ -190,7 +190,7 @@ export function IgAccountDialog({
               >
                 <LogIn className="h-4 w-4" /> {busy ? t('account.waitingLogin') : t('account.login')}
               </Button>
-              <p className="mt-2.5 text-[11px] leading-relaxed text-subtle">
+              <p className="mt-2.5 text-xs leading-relaxed text-subtle">
                 {t('account.credentialsNote')}
               </p>
             </div>
@@ -231,7 +231,7 @@ function CapabilityRow({
       />
       <div className="min-w-0">
         <div className="text-xs text-app">{label}</div>
-        <div className="text-[11px] text-subtle">{hint}</div>
+        <div className="text-xs text-subtle">{hint}</div>
       </div>
     </li>
   )

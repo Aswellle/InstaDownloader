@@ -239,7 +239,7 @@ function HistoryItem({
         <div className="truncate text-sm text-app">
           {row.author ?? t("common.unknownAuthor")}
         </div>
-        <div className="truncate text-[11px] text-subtle" title={row.path}>
+        <div className="truncate text-xs text-subtle" title={row.path}>
           {row.path.split(/[\\/]/).pop()}
         </div>
         <div className="flex items-center gap-2 text-xs text-subtle">

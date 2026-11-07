@@ -121,6 +121,8 @@ export function Checkbox({
   return (
     <button
       type="button"
+      role="checkbox"
+      aria-checked={indeterminate && !checked ? 'mixed' : checked}
       onClick={onChange}
       className={cn(
         'flex h-5 w-5 items-center justify-center rounded-md border transition-colors',

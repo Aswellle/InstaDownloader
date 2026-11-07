@@ -20,6 +20,7 @@ import { toIpcHandler } from './ipc-helpers'
 import { setUiLocale, uiLocale } from './services/ui-locale'
 import { mediaRowsFromItems } from './services/media-rows'
 import { ProfileArchive } from './services/profile-archive'
+import { sanitizeDownloadItems } from './services/download-input'
 import {
   openInstagramLogin,
   clearInstagramLoginSession,
@@ -217,21 +218,10 @@ export function registerIpc(deps: IpcDeps): void {
   // ------------------------------------------------------------ 下载
   handle(
     'download:add',
-    (
-      items: Array<{
-        id: string
-        type: 'image' | 'video'
-        url: string
-        thumbUrl?: string | null
-        author: string
-        shortcode: string
-        indexNo: number
-        takenAt?: number | null
-        width?: number | null
-        height?: number | null
-        duration?: number | null
-      }>
-    ) => {
+    (raw: unknown) => {
+      // 信任边界：渲染层入参逐项校验（见 download-input.ts）
+      const items = sanitizeDownloadItems(raw)
+      if (items.length === 0) return { taskIds: [] as string[] }
       const dir = settings.get().downloadDir
       const enqueue: EnqueueItem[] = items.map((m) => {
         const index = m.indexNo > 1 ? `_${m.indexNo}` : ''

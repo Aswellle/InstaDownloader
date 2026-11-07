@@ -1,5 +1,6 @@
 import { useCallback } from 'react'
 import { toast } from 'sonner'
+import { toastError } from '@/lib/toast-error'
 import type { MediaItem } from '@shared/types'
 import { useTaskStore } from '@/stores/tasks'
 import { useLibraryStore } from '@/stores/library'
@@ -35,7 +36,7 @@ export function useContextMenuActions() {
       const { taskIds } = await window.instadown.addDownload(payload)
       toast.success(i18nT('download.queued', { n: taskIds.length }))
     } catch (e) {
-      toast.error(i18nT('common.errorDetail', { prefix: i18nT('download.queueFailed'), detail: errorMessage(e) }))
+      toastError(i18nT('common.errorDetail', { prefix: i18nT('download.queueFailed'), detail: errorMessage(e) }))
     }
   }, [])
 
@@ -44,7 +45,7 @@ export function useContextMenuActions() {
       await navigator.clipboard.writeText(item.url)
       toast.success(i18nT('grid.linkCopied'))
     } catch {
-      toast.error(i18nT('grid.copyFailed'))
+      toastError(i18nT('grid.copyFailed'))
     }
   }, [])
 
@@ -66,7 +67,7 @@ export function useContextMenuActions() {
     if (task?.destPath) {
       void window.instadown.revealFile(task.destPath)
     } else {
-      toast.error(i18nT('grid.noFilePath'))
+      toastError(i18nT('grid.noFilePath'))
     }
   }, [])
 

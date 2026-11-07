@@ -19,6 +19,7 @@ import {
   Zap
 } from 'lucide-react'
 import { toast } from 'sonner'
+import { toastError } from '@/lib/toast-error'
 import type { ThemeMode } from '@shared/types'
 import { Dialog } from '@/components/ui/dialog'
 import { Button, Input } from '@/components/ui/primitives'
@@ -106,9 +107,9 @@ export function SettingsDialog({ open, onClose }: { open: boolean; onClose: () =
   const openDir = async () => {
     try {
       const opened = await window.instadown.openDownloadDir()
-      if (opened === null) toast.error(t('settings.dirNotSet'))
+      if (opened === null) toastError(t('settings.dirNotSet'))
     } catch (e) {
-      toast.error(t('common.errorDetail', { prefix: t('settings.dirOpenFailed'), detail: errorMessage(e) }))
+      toastError(t('common.errorDetail', { prefix: t('settings.dirOpenFailed'), detail: errorMessage(e) }))
     }
   }
 
@@ -141,10 +142,10 @@ export function SettingsDialog({ open, onClose }: { open: boolean; onClose: () =
       } else if (res.cancelled) {
         toast.info(t('settings.loginCancelled'))
       } else {
-        toast.error(t(res.reason === 'timeout' ? 'login.timeout' : 'settings.loginFailed'))
+        toastError(t(res.reason === 'timeout' ? 'login.timeout' : 'settings.loginFailed'))
       }
     } catch (e) {
-      toast.error(t('common.errorDetail', { prefix: t('settings.loginError'), detail: errorMessage(e) }))
+      toastError(t('common.errorDetail', { prefix: t('settings.loginError'), detail: errorMessage(e) }))
     } finally {
       setLoggingIn(false)
     }
@@ -158,7 +159,7 @@ export function SettingsDialog({ open, onClose }: { open: boolean; onClose: () =
       setIgLoggedIn(null)
       toast.success(t('settings.loggedOut'))
     } catch (e) {
-      toast.error(t('common.errorDetail', { prefix: t('settings.logoutFailed'), detail: errorMessage(e) }))
+      toastError(t('common.errorDetail', { prefix: t('settings.logoutFailed'), detail: errorMessage(e) }))
     }
   }
 
@@ -171,7 +172,7 @@ export function SettingsDialog({ open, onClose }: { open: boolean; onClose: () =
         description: t('settings.cacheClearedDesc')
       })
     } catch (e) {
-      toast.error(t('common.errorDetail', { prefix: t('settings.clearFailed'), detail: errorMessage(e) }))
+      toastError(t('common.errorDetail', { prefix: t('settings.clearFailed'), detail: errorMessage(e) }))
     }
   }
 
@@ -182,7 +183,7 @@ export function SettingsDialog({ open, onClose }: { open: boolean; onClose: () =
       setConfirm(null)
       toast.success(t('settings.historyCleared'), { description: t('settings.historyClearedDesc') })
     } catch (e) {
-      toast.error(t('common.errorDetail', { prefix: t('settings.clearFailed'), detail: errorMessage(e) }))
+      toastError(t('common.errorDetail', { prefix: t('settings.clearFailed'), detail: errorMessage(e) }))
     }
   }
 

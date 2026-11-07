@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { toast, Toaster } from 'sonner'
+import { toastError } from '@/lib/toast-error'
 import { AlertTriangle, RotateCcw, History, LayoutGrid, LogIn, Settings, ChevronDown, ArrowLeft } from 'lucide-react'
 import type { MediaItem } from '@shared/types'
 import { useLibraryStore, currentItems } from '@/stores/library'
@@ -126,7 +127,7 @@ export default function App() {
       const text = e.dataTransfer?.getData('text/plain') || e.dataTransfer?.getData('text/uri-list') || ''
       if (text && isProbablyIgUrl(text)) {
         toast(t('clipboard.dropDetected'))
-        void parse(text).catch((err) => toast.error(errorMessage(err)))
+        void parse(text).catch((err) => toastError(errorMessage(err)))
       }
     }
 
@@ -154,7 +155,7 @@ export default function App() {
       setWorkerDown(status === 'down')
       if (status === 'ready') setPythonReason(null)
       if (status === 'down') {
-        toast.error(i18nT('download.workerDown'))
+        toastError(i18nT('download.workerDown'))
         // 启动失败时问一次运行环境：把"解析失败"升级成可行动的指引
         // （缺 Python / 版本过旧），而不是让用户面对一句含糊的错误
         void window.instadown
@@ -179,7 +180,7 @@ export default function App() {
     try {
       setLibRows(await window.instadown.getLibrary())
     } catch (e) {
-      toast.error(t('common.errorDetail', { prefix: t('libFull.loadFailed'), detail: errorMessage(e) }))
+      toastError(t('common.errorDetail', { prefix: t('libFull.loadFailed'), detail: errorMessage(e) }))
     } finally {
       setLibLoading(false)
     }
@@ -232,7 +233,7 @@ export default function App() {
         const { taskIds } = await window.instadown.addDownload(payload)
         toast.success(t('download.queued', { n: taskIds.length }))
       } catch (e) {
-        toast.error(t('common.errorDetail', { prefix: t('download.queueFailed'), detail: errorMessage(e) }))
+        toastError(t('common.errorDetail', { prefix: t('download.queueFailed'), detail: errorMessage(e) }))
       }
     },
     [t]
@@ -240,7 +241,7 @@ export default function App() {
 
   const handleParse = useCallback(
     (input: string) => {
-      void parse(input).catch((e) => toast.error(errorMessage(e)))
+      void parse(input).catch((e) => toastError(errorMessage(e)))
     },
     [parse]
   )
@@ -357,7 +358,7 @@ export default function App() {
       const { taskIds } = await window.instadown.addDownload(payload)
       toast.success(t('download.queued', { n: taskIds.length }))
     } catch (e) {
-      toast.error(t('common.errorDetail', { prefix: t('download.queueFailed'), detail: errorMessage(e) }))
+      toastError(t('common.errorDetail', { prefix: t('download.queueFailed'), detail: errorMessage(e) }))
     }
   }
 
@@ -380,10 +381,10 @@ export default function App() {
         const lastInput = view.mode === 'error' ? view.lastInput : undefined
         if (lastInput) handleParse(lastInput)
       } else if (!res.cancelled) {
-        toast.error(t(res.reason === 'timeout' ? 'login.timeout' : 'login.incomplete'))
+        toastError(t(res.reason === 'timeout' ? 'login.timeout' : 'login.incomplete'))
       }
     } catch (e) {
-      toast.error(t('common.errorDetail', { prefix: t('settings.loginError'), detail: errorMessage(e) }))
+      toastError(t('common.errorDetail', { prefix: t('settings.loginError'), detail: errorMessage(e) }))
     }
   }
 
@@ -402,7 +403,7 @@ export default function App() {
       await navigator.clipboard.writeText(item.url)
       toast.success(t('grid.linkCopied'))
     } catch {
-      toast.error(t('grid.copyFailed'))
+      toastError(t('grid.copyFailed'))
     }
   }, [t])
 
@@ -425,7 +426,7 @@ export default function App() {
     if (task?.destPath) {
       void window.instadown.revealFile(task.destPath)
     } else {
-      toast.error(t('grid.noFilePath'))
+      toastError(t('grid.noFilePath'))
     }
   }, [t])
 
@@ -693,7 +694,7 @@ export default function App() {
                         variant="outline"
                         size="sm"
                         onClick={() =>
-                          void loadMore().catch((e) => toast.error(errorMessage(e)))
+                          void loadMore().catch((e) => toastError(errorMessage(e)))
                         }
                       >
                         <ChevronDown className="h-4 w-4" /> {t('parse.loadMore')}

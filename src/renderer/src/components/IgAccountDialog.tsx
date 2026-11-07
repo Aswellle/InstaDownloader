@@ -10,6 +10,7 @@ import {
   UserRound
 } from 'lucide-react'
 import { toast } from 'sonner'
+import { toastError } from '@/lib/toast-error'
 import { Dialog } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/primitives'
 import { SmartImage } from '@/components/ui/smart-image'
@@ -78,7 +79,7 @@ export function IgAccountDialog({
       toast.success(t('account.loggedOut'))
       onClose()
     } catch (e) {
-      toast.error(t('common.errorDetail', { prefix: t('account.logoutFailed'), detail: errorMessage(e) }))
+      toastError(t('common.errorDetail', { prefix: t('account.logoutFailed'), detail: errorMessage(e) }))
     } finally {
       setBusy(false)
     }

@@ -9,6 +9,7 @@ import {
   History as HistoryIcon,
 } from 'lucide-react'
 import { toast } from 'sonner'
+import { toastError } from '@/lib/toast-error'
 import type { HistoryRow, MediaItem } from '@shared/types'
 import { formatBytes, formatDate } from '@/lib/utils'
 import { canViewInApp, fileKindOf, localFileUrl } from '@/lib/local-file'
@@ -37,7 +38,7 @@ export function HistoryPanel({ open, onClose, onOpenViewer }: HistoryPanelProps)
       const rows = await window.instadown.getHistory()
       setHistory(rows)
     } catch {
-      toast.error(t('history.fetchFailed'))
+      toastError(t('history.fetchFailed'))
     } finally {
       setLoading(false)
     }
@@ -73,7 +74,7 @@ export function HistoryPanel({ open, onClose, onOpenViewer }: HistoryPanelProps)
     (row: HistoryRow) => {
       if (!canViewInApp(row.path)) {
         // 非图片/视频（未知扩展名）：应用内无法渲染，交给系统默认程序
-        void window.instadown.openFile(row.path).catch(() => toast.error(t('history.openFailed')))
+        void window.instadown.openFile(row.path).catch(() => toastError(t('history.openFailed')))
         return
       }
       const idx = viewableItems.findIndex((i) => i.id === String(row.id))
@@ -86,7 +87,7 @@ export function HistoryPanel({ open, onClose, onOpenViewer }: HistoryPanelProps)
     try {
       await window.instadown.revealFile(path)
     } catch {
-      toast.error(t('history.revealFailed'))
+      toastError(t('history.revealFailed'))
     }
   }, [t])
 
@@ -94,7 +95,7 @@ export function HistoryPanel({ open, onClose, onOpenViewer }: HistoryPanelProps)
     try {
       await window.instadown.openFile(path)
     } catch {
-      toast.error(t('history.openFailed'))
+      toastError(t('history.openFailed'))
     }
   }, [t])
 
@@ -103,7 +104,7 @@ export function HistoryPanel({ open, onClose, onOpenViewer }: HistoryPanelProps)
       await navigator.clipboard.writeText(path)
       toast.success(t('history.pathCopied'))
     } catch {
-      toast.error(t('history.copyFailed'))
+      toastError(t('history.copyFailed'))
     }
   }, [t])
 
@@ -114,7 +115,7 @@ export function HistoryPanel({ open, onClose, onOpenViewer }: HistoryPanelProps)
       setConfirmClear(false)
       toast.success(t('history.cleared'))
     } catch {
-      toast.error(t('history.clearFailed'))
+      toastError(t('history.clearFailed'))
     }
   }, [t])
 

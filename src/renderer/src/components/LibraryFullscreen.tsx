@@ -260,7 +260,7 @@ export function LibraryFullscreen({
                     className={cn(
                       'flex h-7 shrink-0 items-center gap-1 rounded-md px-2 text-xs transition-colors',
                       typeFilter === value
-                        ? 'bg-rose-500 text-white'
+                        ? 'bg-rose-600 text-white'
                         : 'text-muted hover:bg-surface-hover hover:text-app'
                     )}
                     title={label}

@@ -8,7 +8,7 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        primary: 'bg-rose-500 text-white hover:bg-rose-400 active:bg-rose-600',
+        primary: 'bg-rose-600 text-white hover:bg-rose-700 active:bg-rose-800',
         secondary: 'bg-surface-hover text-app hover:bg-surface-active',
         ghost: 'text-muted hover:bg-surface-hover hover:text-app',
         outline: 'border border-app-strong text-app hover:bg-surface-hover'
@@ -127,7 +127,7 @@ export function Checkbox({
       className={cn(
         'flex h-5 w-5 items-center justify-center rounded-md border transition-colors',
         active
-          ? 'border-rose-500 bg-rose-500 text-white'
+          ? 'border-rose-600 bg-rose-600 text-white'
           : 'border-zinc-400 bg-white/70 text-transparent hover:border-zinc-600 dark:border-zinc-500 dark:bg-black/40 dark:hover:border-zinc-300',
         className
       )}

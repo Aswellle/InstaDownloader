@@ -19,7 +19,7 @@ import { loadLibraryPrefs, saveLibraryPrefs } from '@/lib/library-prefs'
 
 // ── Avatar color palette (deterministic by username) ─────────────────────
 const AVATAR_COLORS = [
-  'bg-rose-500',
+  'bg-rose-600',
   'bg-orange-500',
   'bg-amber-500',
   'bg-emerald-500',

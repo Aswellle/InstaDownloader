@@ -107,7 +107,7 @@ export function ConfirmDialog({
                 autoFocus
                 variant={danger ? 'primary' : 'secondary'}
                 size="sm"
-                className={danger ? 'bg-rose-600 hover:bg-rose-500 active:bg-rose-700' : undefined}
+                className={danger ? 'bg-rose-600 hover:bg-rose-700 active:bg-rose-800' : undefined}
                 onClick={onConfirm}
               >
                 {confirmLabel ?? t('common.confirm')}

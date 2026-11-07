@@ -246,7 +246,7 @@ export function SettingsDialog({ open, onClose }: { open: boolean; onClose: () =
                   className={cn(
                     'h-8 w-8 rounded-lg text-sm transition-colors',
                     n === concurrency
-                      ? 'bg-rose-500 text-white'
+                      ? 'bg-rose-600 text-white'
                       : 'bg-surface-hover text-muted hover:bg-surface-active hover:text-app'
                   )}
                 >
@@ -557,7 +557,7 @@ function Toggle({
   /** safe=开启时绿色（该选项开着更安全）；default=常规主色 */
   tone?: 'default' | 'safe'
 }) {
-  const onColor = tone === 'safe' ? 'bg-emerald-500' : 'bg-rose-500'
+  const onColor = tone === 'safe' ? 'bg-emerald-600' : 'bg-rose-600'
   return (
     <div className="flex items-start justify-between gap-4">
       <div className="min-w-0">

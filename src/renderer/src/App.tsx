@@ -27,7 +27,7 @@ import { appErrorText, errorMessage } from '@/lib/app-error'
 import { localFileUrl } from '@/lib/local-file'
 import { isProbablyIgUrl, classifyIgUrl } from '@shared/ig-url'
 import { useApplyTheme, useIsDark } from '@/lib/theme'
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence, MotionConfig, motion } from 'framer-motion'
 
 export default function App() {
   const view = useLibraryStore((s) => s.view)
@@ -429,7 +429,10 @@ export default function App() {
     }
   }, [t])
 
+  // reducedMotion="user"：跟随系统"减少动态效果"设置——开启时 framer-motion
+  // 自动禁用位移/缩放动画、保留透明度淡入淡出，全部子树一次性生效。
   return (
+    <MotionConfig reducedMotion="user">
     <div id="main-container" className="relative flex h-full flex-col">
       {/* sonner 内置 light/dark 主题，避免硬编码深色导致浅色模式下弹窗仍是深色 */}
       <Toaster
@@ -807,6 +810,7 @@ export default function App() {
         )}
       </AnimatePresence>
     </div>
+    </MotionConfig>
   )
 }
 

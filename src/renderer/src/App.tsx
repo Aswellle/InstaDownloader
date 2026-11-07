@@ -699,13 +699,13 @@ export default function App() {
                       >
                         <ChevronDown className="h-4 w-4" /> {t('parse.loadMore')}
                       </Button>
-                      <span className="text-[11px] text-subtle">
+                      <span className="text-xs text-subtle">
                         {t('parse.loadedCount', { n: view.page.items.length })}
                       </span>
                     </>
                   )}
                   {!view.page.loadingMore && !view.page.cursor && view.page.items.length > 0 && (
-                    <span className="text-[11px] text-subtle">
+                    <span className="text-xs text-subtle">
                       {t('parse.loadedAll', { n: view.page.items.length })}
                     </span>
                   )}

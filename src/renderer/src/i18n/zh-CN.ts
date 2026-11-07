@@ -191,6 +191,7 @@ export const zhCN = {
     count: '{n} 条',
     clear: '清空',
     empty: '暂无下载记录',
+    emptyAction: '去解析第一个链接',
     viewInApp: '在应用内查看',
     openExternal: '用系统默认程序打开',
     reveal: '在文件夹中显示',
@@ -220,6 +221,7 @@ export const zhCN = {
     searchPlaceholder: '搜索作者…',
     noMedia: '暂无媒体',
     noMediaHint: '下载的媒体会显示在这里',
+    emptyAction: '去解析第一个链接',
     filesCount: '{n} 个文件',
     avgSize: '平均 {w}×{h}',
     loginWallRetry: '重试'

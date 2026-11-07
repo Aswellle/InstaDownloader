@@ -245,7 +245,7 @@ export function LibraryPanel({
             ) : error ? (
               <ErrorState message={error} onRetry={() => void loadLibrary()} />
             ) : totalCount === 0 ? (
-              <EmptyLibrary />
+              <EmptyLibrary onClose={onClose} />
             ) : showAll ? (
               <FlatGrid items={items} onOpen={onOpenItem} />
             ) : (
@@ -296,7 +296,7 @@ function ErrorState({ message, onRetry }: { message: string; onRetry: () => void
   )
 }
 
-function EmptyLibrary() {
+function EmptyLibrary({ onClose }: { onClose: () => void }) {
   const { t } = useI18n()
   return (
     <div className="flex h-full flex-col items-center justify-center">
@@ -305,6 +305,17 @@ function EmptyLibrary() {
       </div>
       <h2 className="mt-4 text-base font-medium text-muted">{t("library.noMedia")}</h2>
       <p className="mt-1 text-sm text-subtle">{t("library.noMediaHint")}</p>
+      <Button
+        variant="outline"
+        size="sm"
+        className="mt-4"
+        onClick={() => {
+          onClose()
+          window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', ctrlKey: true, bubbles: true }))
+        }}
+      >
+        {t("library.emptyAction")}
+      </Button>
     </div>
   )
 }

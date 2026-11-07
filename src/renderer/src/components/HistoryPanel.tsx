@@ -14,6 +14,7 @@ import type { HistoryRow, MediaItem } from '@shared/types'
 import { formatBytes, formatDate } from '@/lib/utils'
 import { canViewInApp, fileKindOf, localFileUrl } from '@/lib/local-file'
 import { FileThumb } from '@/components/ui/file-thumb'
+import { Button } from '@/components/ui/primitives'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { useI18n } from '@/i18n'
 
@@ -177,6 +178,17 @@ export function HistoryPanel({ open, onClose, onOpenViewer }: HistoryPanelProps)
                 <div className="flex flex-col items-center justify-center py-12 text-subtle">
                   <HistoryIcon className="mb-2 h-8 w-8" />
                   <span className="text-sm">{t("history.empty")}</span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="mt-4"
+                    onClick={() => {
+                      onClose()
+                      window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', ctrlKey: true, bubbles: true }))
+                    }}
+                  >
+                    {t("history.emptyAction")}
+                  </Button>
                 </div>
               ) : (
                 <div className="space-y-1 p-2">

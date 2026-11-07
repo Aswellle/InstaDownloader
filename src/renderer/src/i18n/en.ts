@@ -178,6 +178,7 @@ export const en = {
     count: '{n} items',
     clear: 'Clear',
     empty: 'No downloads yet',
+    emptyAction: 'Parse your first link',
     viewInApp: 'View in app',
     openExternal: 'Open with system default app',
     reveal: 'Show in folder',
@@ -206,6 +207,7 @@ export const en = {
     searchPlaceholder: 'Search authors…',
     noMedia: 'No media yet',
     noMediaHint: 'Downloaded media will appear here',
+    emptyAction: 'Parse your first link',
     filesCount: '{n} files',
     avgSize: 'avg {w}×{h}',
     loginWallRetry: 'Retry'

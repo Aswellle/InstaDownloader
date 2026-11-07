@@ -456,14 +456,14 @@ export default function App() {
         <div className="titlebar-safe flex w-full items-center gap-2 px-4">
           <button
             className="no-drag rounded-md p-2 text-muted transition-colors hover:bg-surface-hover hover:text-app focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--c-bg)]"
-            title={t('topBar.history')}
+            aria-label={t('topBar.history')} title={t('topBar.history')}
             onClick={() => { setHistoryOpen(true); setLibraryOpen(false) }}
           >
             <History className="h-4 w-4" />
           </button>
           <button
             className="no-drag rounded-md p-2 text-muted transition-colors hover:bg-surface-hover hover:text-app focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--c-bg)]"
-            title={t('topBar.library')}
+            aria-label={t('topBar.library')} title={t('topBar.library')}
             onClick={() => {
               setHistoryOpen(false)
               setLibraryOpen(true)
@@ -475,7 +475,7 @@ export default function App() {
               会被 Windows 原生窗口控制按钮遮挡） */}
           <button
             className="no-drag rounded-md p-2 text-muted transition-colors hover:bg-surface-hover hover:text-app focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--c-bg)]"
-            title={t('topBar.settings')}
+            aria-label={t('topBar.settings')} title={t('topBar.settings')}
             onClick={() => setSettingsOpen(true)}
           >
             <Settings className="h-4 w-4" />

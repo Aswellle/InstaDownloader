@@ -454,14 +454,14 @@ export default function App() {
       <div className="drag-region flex h-14 shrink-0 items-center gap-2 border-b border-app bg-app">
         <div className="titlebar-safe flex w-full items-center gap-2 px-4">
           <button
-            className="no-drag rounded-md p-2 text-muted transition-colors hover:bg-surface-hover hover:text-app"
+            className="no-drag rounded-md p-2 text-muted transition-colors hover:bg-surface-hover hover:text-app focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--c-bg)]"
             title={t('topBar.history')}
             onClick={() => { setHistoryOpen(true); setLibraryOpen(false) }}
           >
             <History className="h-4 w-4" />
           </button>
           <button
-            className="no-drag rounded-md p-2 text-muted transition-colors hover:bg-surface-hover hover:text-app"
+            className="no-drag rounded-md p-2 text-muted transition-colors hover:bg-surface-hover hover:text-app focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--c-bg)]"
             title={t('topBar.library')}
             onClick={() => {
               setHistoryOpen(false)
@@ -473,7 +473,7 @@ export default function App() {
           {/* 设置入口：与历史/媒体库并列，位置固定可见（原先放顶栏最右，
               会被 Windows 原生窗口控制按钮遮挡） */}
           <button
-            className="no-drag rounded-md p-2 text-muted transition-colors hover:bg-surface-hover hover:text-app"
+            className="no-drag rounded-md p-2 text-muted transition-colors hover:bg-surface-hover hover:text-app focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--c-bg)]"
             title={t('topBar.settings')}
             onClick={() => setSettingsOpen(true)}
           >

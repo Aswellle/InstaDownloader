@@ -8,7 +8,8 @@ import {
   FolderOpen,
   ImageIcon,
   Loader2,
-  Play
+  Play,
+  ZoomIn
 } from 'lucide-react'
 import type { MediaItem } from '@shared/types'
 import { useTaskStore } from '@/stores/tasks'
@@ -159,6 +160,16 @@ function MediaCard({
         ) : (
           <ImageIcon className="h-3 w-3" />
         )}
+      </div>
+
+      {/* 双击放大暗示：悬停淡入的角标——"双击打开查看器"此前仅靠主页
+          空态文案承载，悬停时无可发现性。pointer-events-none（纯暗示，
+          不挡卡片点击）；hover:hover 门控（触屏无双击悬停语义）。 */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute right-9 top-2 hidden rounded-md bg-black/65 px-1.5 py-1 text-white opacity-0 backdrop-blur-sm transition-opacity duration-150 group-hover:opacity-100 [@media(hover:hover)]:block"
+      >
+        <ZoomIn className="h-3 w-3" />
       </div>
 
       {/* 勾选框：自己处理点击（不再依赖卡片 onClick），否则卡片内的

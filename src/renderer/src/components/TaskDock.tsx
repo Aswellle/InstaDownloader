@@ -196,10 +196,12 @@ function TaskRow({ task, onRemove }: { task: TaskSnapshot; onRemove: (task: Task
         </div>
         {/* 只显示文件名（含扩展名）：完整路径塞在窄列里只会把扩展名挤到
             看不见；完整路径放悬停提示。destPath 在事件合并的快照里可能
-            尚未到达（undefined），不能假设必有。 */}
-        <div className="truncate text-[10px] text-subtle" title={task.destPath}>
-          {(task.destPath ?? '').split(/[\\/]/).pop()}
-        </div>
+            尚未到达（undefined），不能假设必有；路径未计划时不渲染空行。 */}
+        {(task.destPath ?? '').split(/[\\/]/).pop() && (
+          <div className="truncate text-[10px] text-subtle" title={task.destPath}>
+            {(task.destPath ?? '').split(/[\\/]/).pop()}
+          </div>
+        )}
       </div>
 
       <Badge tone={tone} className="shrink-0">{statusLabel}</Badge>

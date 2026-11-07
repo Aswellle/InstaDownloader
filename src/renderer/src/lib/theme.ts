@@ -31,8 +31,17 @@ export function useApplyTheme(): void {
 
     const apply = (override?: boolean) => {
       const dark = override ?? resolveIsDark(theme)
+      // 抑制切换瞬间的过渡：.dark 翻转会同时改动全元素的 background/
+      // border/color，元素上的 transition-colors 会一起播放，主题切换
+      // 呈现为整页渐变涂抹而非干脆的快照。注入禁用样式 → 强制重排 →
+      // 下一帧移除。
+      const style = document.createElement('style')
+      style.textContent = '*,*::before,*::after{transition:none !important}'
+      document.head.appendChild(style)
       root.classList.toggle('dark', dark)
       root.style.colorScheme = dark ? 'dark' : 'light'
+      void root.offsetHeight
+      requestAnimationFrame(() => style.remove())
     }
     apply()
 

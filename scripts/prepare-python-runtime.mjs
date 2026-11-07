@@ -184,6 +184,22 @@ function extractTarGz(buf, destDir) {
   rmSync(inner, { recursive: true, force: true })
 }
 
+/**
+ * 裁剪后的冒烟校验：worker 运行所需的标准库必须仍可导入。裁剪清单
+ * 未来若误删依赖（如 json/ssl），在构建期当场失败，而不是等到用户
+ * 机器上表现为解析失败。
+ */
+function smokeCheck(root, flavor) {
+  const rel = flavor.startsWith('win32') ? 'python.exe' : join('bin', 'python3')
+  const exe = join(root, rel)
+  const probe = 'import json, ssl, gzip, threading, base64, hashlib, re, time, urllib.parse, http.client; print("ok")'
+  const r = spawnSync(exe, ['-E', '-s', '-c', probe], { cwd: root, encoding: 'utf8' })
+  if (r.status !== 0 || !String(r.stdout).includes('ok')) {
+    throw new Error(`裁剪破坏了标准库（worker 依赖不可用）：${String(r.stderr || r.status)}`)
+  }
+  console.log(`[python-runtime] ${flavor}: 标准库冒烟校验通过`)
+}
+
 async function prepare(flavor, force) {
   const root = resolve('python-runtime')
   const target = join(root, flavor)
@@ -208,6 +224,7 @@ async function prepare(flavor, force) {
   mkdirSync(target, { recursive: true })
   extractTarGz(buf, target)
   prune(target)
+  smokeCheck(target, flavor)
   writeFileSync(
     marker,
     JSON.stringify({ python: PY_VERSION, tag: PY_TAG, triple, flavor, createdAt: new Date().toISOString() }, null, 2)

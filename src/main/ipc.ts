@@ -286,19 +286,27 @@ export function registerIpc(deps: IpcDeps): void {
   handle('image:cache', async (urls: string[]) => {
     const { cacheImage, cachedPath, localUrlFor } = await import('./services/image-cache')
     const out: Record<string, string> = {}
-    for (const url of urls.slice(0, 200)) {
-      if (!url || typeof url !== 'string') continue
-      // 命中缓存不重复下载
+    // 小并发（3）：高延迟网络下逐张 await 首批网格可达分钟级；3 路与
+    // 下载引擎的并发上限同量级，对 CDN 安全。
+    const queue = urls.slice(0, 200).filter((u) => typeof u === 'string' && u)
+    for (const url of [...queue]) {
       if (cachedPath(url)) {
         out[url] = localUrlFor(url)
-        continue
-      }
-      try {
-        out[url] = await cacheImage(url)
-      } catch {
-        /* 单张失败：调用方回退到原始 URL */
+        queue.splice(queue.indexOf(url), 1)
       }
     }
+    await Promise.all(
+      Array.from({ length: 3 }, async () => {
+        while (queue.length) {
+          const url = queue.shift()!
+          try {
+            out[url] = await cacheImage(url)
+          } catch {
+            /* 单张失败：调用方回退到原始 URL */
+          }
+        }
+      })
+    )
     return out
   })
   handle('image:cacheStats', async () => {

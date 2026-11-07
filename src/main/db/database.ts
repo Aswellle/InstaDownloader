@@ -55,6 +55,8 @@ CREATE TABLE IF NOT EXISTS settings (
 );
 CREATE INDEX IF NOT EXISTS idx_tasks_status ON tasks(status, created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_media_author ON media(author, taken_at DESC);
+-- 媒体库按 (作者, 远端地址) 去重的相关子查询依赖此索引
+CREATE INDEX IF NOT EXISTS idx_media_url_author ON media(url, author);
 CREATE INDEX IF NOT EXISTS idx_history_media ON history(media_id, created_at DESC);
 `
 

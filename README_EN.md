@@ -8,9 +8,9 @@
 
 **Archive Instagram media to your own disk — completely.**
 
-[![Release](https://img.shields.io/badge/Release-v0.5.0-rose?logo=github)](../../releases)
+[![Release](https://img.shields.io/badge/Release-v0.6.0-rose?logo=github)](../../releases)
 [![Downloads](https://img.shields.io/github/downloads/Aswellle/InstaDown/total?label=Downloads&color=0d9488&logo=github)](../../releases)
-[![Tests](https://img.shields.io/badge/Tests-130%20passing-16a34a?logo=vitest)](#development)
+[![Tests](https://img.shields.io/badge/Tests-173%20passing-16a34a?logo=vitest)](#development)
 [![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-blue?logo=electron)](#download)
 [![License](https://img.shields.io/badge/License-MIT-8b5cf6)](LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-ff69b4)](#contributing)
@@ -202,15 +202,15 @@ When packaging with `npm run dist`, the afterPack hook copies the bundled
 runtime from `python-runtime/` into the installer; a missing runtime fails the
 build instead of producing an installer whose parser can't run.
 
-Test coverage: queue state machine, resumable downloads, URL classification, carousel fallback, session tiering, selector stability — **130 cases** (83 Vitest + 47 unittest).
+Test coverage: queue state machine, resumable downloads, URL classification, carousel fallback, session tiering, selector stability — **173 cases** (126 Vitest + 47 unittest).
 
 ## Release process
 
 ```bash
 # 1. Bump version in package.json and commit
 # 2. Push a tag → GitHub Actions builds all three platforms and creates the Release
-git tag v0.5.0
-git push origin v0.5.0
+git tag v0.6.0
+git push origin v0.6.0
 ```
 
 Local verification: `npm run dist:dir` (directory) or `npm run dist` (installers).

@@ -148,10 +148,10 @@ export const en = {
     completed: '{n} completed',
     failed: '{n} failed',
     clearCompleted: 'Clear finished',
-    clearTitle: 'Clear all finished/failed/canceled tasks',
-    confirmClearTitle: 'Clear finished tasks?',
+    clearTitle: 'Clear all settled tasks (including failed ones)',
+    confirmClearTitle: 'Clear settled tasks?',
     confirmClearBody:
-      'This removes {n} finished/failed/canceled task records. This cannot be undone; files already downloaded to disk are not affected.',
+      'This removes {n} settled task records (including failed ones). This cannot be undone; files already downloaded to disk are not affected.',
     status_WAITING: 'Waiting',
     status_DOWNLOADING: 'Downloading',
     status_PAUSED: 'Paused',

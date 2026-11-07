@@ -160,10 +160,10 @@ export const zhCN = {
     completed: '{n} 已完成',
     failed: '{n} 未成功',
     clearCompleted: '清除已完成',
-    clearTitle: '清除所有已完成/失败/取消的任务',
-    confirmClearTitle: '清除已完成的任务？',
+    clearTitle: '清除所有已结束的任务（含未成功的）',
+    confirmClearTitle: '清除已结束的任务？',
     confirmClearBody:
-      '将移除 {n} 条已完成/失败/取消的任务记录。此操作不可撤销；已下载到磁盘的文件不受影响。',
+      '将移除 {n} 条已结束任务的记录（含未成功的）。此操作不可撤销；已下载到磁盘的文件不受影响。',
     status_WAITING: '等待中',
     status_DOWNLOADING: '下载中',
     status_PAUSED: '已暂停',

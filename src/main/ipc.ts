@@ -21,6 +21,7 @@ import { setUiLocale, uiLocale } from './services/ui-locale'
 import { mediaRowsFromItems } from './services/media-rows'
 import { ProfileArchive } from './services/profile-archive'
 import { sanitizeDownloadItems } from './services/download-input'
+import { sanitizeSettingsPatch } from './services/settings-validate'
 import {
   openInstagramLogin,
   clearInstagramLoginSession,
@@ -328,9 +329,11 @@ export function registerIpc(deps: IpcDeps): void {
 
   // ------------------------------------------------------------ 设置
   handle('settings:get', () => settings.get())
-  handle('settings:set', (patch: Partial<AppSettings>) => {
-    const next = settings.set(patch)
-    if (patch.concurrency != null) tasks.concurrency = next.concurrency
+  handle('settings:set', (patch: unknown) => {
+    // 信任边界：白名单键 + 类型校验（见 settings-validate.ts）
+    const clean = sanitizeSettingsPatch(patch)
+    const next = settings.set(clean)
+    if (clean.concurrency != null) tasks.concurrency = next.concurrency
     return next
   })
   handle('settings:chooseDir', async () => {

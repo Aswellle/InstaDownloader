@@ -7,10 +7,12 @@
          instadown-file: 用于下载历史的本地文件缩略图与"应用内查看已下载文件"
          （img 与 video 都要放行，缺失时被 CSP 拦下且无控制台报错，表现为全占位符）。
          base-uri/form-action/object-src 收紧为 none：本应用没有 <base>、表单提交
-         与插件内容，关闭后可杜绝这几类注入面。 -->
+         与插件内容，关闭后可杜绝这几类注入面。connect-src 不放行 https：
+         渲染层无任何直连网络请求（IG 数据均经主进程），收窄后即便渲染层
+         被攻破也没有现成的数据外传通道。 -->
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' instadown-img: instadown-file: https: data: blob:; media-src 'self' instadown-file: https: blob:; connect-src 'self' instadown-img: https:; font-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'"
+      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' instadown-img: instadown-file: https: data: blob:; media-src 'self' instadown-file: https: blob:; connect-src 'self' instadown-img:; font-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'"
     />
   </head>
   <body>

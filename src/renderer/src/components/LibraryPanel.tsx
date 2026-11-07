@@ -87,7 +87,7 @@ function MediaCard({
       </div>
 
       {/* Hover hint */}
-      <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 transition-all group-hover:bg-black/20 group-hover:opacity-100">
+      <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 transition-[background-color,opacity] group-hover:bg-black/20 group-hover:opacity-100">
         <span className="rounded-md bg-black/70 px-2 py-1 text-[11px] text-white backdrop-blur-sm">
           {t('library.openItem')}
         </span>

@@ -22,7 +22,7 @@
     --c-border-strong: #d4d4d8;
     --c-text: #18181b;
     --c-text-muted: #52525b;
-    --c-text-subtle: #71717a;
+    --c-text-subtle: #6b6b74;
     --c-overlay: rgb(0 0 0 / 0.4);
     --c-scrollbar: rgb(24 24 27 / 0.2);
     --c-scrollbar-hover: rgb(24 24 27 / 0.35);
@@ -38,7 +38,7 @@
     --c-border-strong: #3f3f46;
     --c-text: #f4f4f5;
     --c-text-muted: #a1a1aa;
-    --c-text-subtle: #71717a;
+    --c-text-subtle: #91919a;
     --c-overlay: rgb(0 0 0 / 0.6);
     --c-scrollbar: rgb(161 161 170 / 0.22);
     --c-scrollbar-hover: rgb(161 161 170 / 0.4);
